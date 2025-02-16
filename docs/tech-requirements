@@ -1,0 +1,3 @@
+FROM 12F
+1. Processes should be - fastly starting, stateless and independent at runtime and gracefully shutdown
+2. Think about logs (and metrics, if possible)
