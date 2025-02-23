@@ -35,6 +35,33 @@ func main() {
 				Str("Endpoint", c.Request.URL.RequestURI()).
 				Send()
 		})
+
+		api.Any("/profiles/*proxyPath", rproxy.ReverseProxy("http://profiles-service:8080"), func(c *gin.Context) {
+			logger.
+				Info().
+				Str("Client IP", c.ClientIP()).
+				Str("Proxy-Service", "profiles").
+				Str("Endpoint", c.Request.URL.RequestURI()).
+				Send()
+		})
+
+		api.Any("/players/*proxyPath", rproxy.ReverseProxy("http://players-service:8080"), func(c *gin.Context) {
+			logger.
+				Info().
+				Str("Client IP", c.ClientIP()).
+				Str("Proxy-Service", "players").
+				Str("Endpoint", c.Request.URL.RequestURI()).
+				Send()
+		})
+
+		api.Any("/games/*proxyPath", rproxy.ReverseProxy("http://games-service:8080"), func(c *gin.Context) {
+			logger.
+				Info().
+				Str("Client IP", c.ClientIP()).
+				Str("Proxy-Service", "games").
+				Str("Endpoint", c.Request.URL.RequestURI()).
+				Send()
+		})
 	}
 
 	r.Run()
