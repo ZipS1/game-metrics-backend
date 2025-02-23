@@ -1,6 +1,7 @@
 package main
 
 import (
+	"game-metrics/api-gateway/config"
 	"game-metrics/api-gateway/pkg/rproxy"
 	"net/http"
 	"os"
@@ -9,60 +10,36 @@ import (
 	"github.com/rs/zerolog"
 )
 
+func loggingMiddleware(logger zerolog.Logger, serviceName string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		logger.Info().
+			Str("Client IP", ctx.ClientIP()).
+			Str("Proxy-Service", serviceName).
+			Str("Endpoint", ctx.Request.URL.RequestURI()).
+			Send()
+		ctx.Next()
+	}
+}
+
 func main() {
 	r := gin.Default()
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
 
-	r.GET("/health", func(c *gin.Context) {
-		logger.Info().
-			Str("Client IP", c.ClientIP()).
-			Str("Proxy-Service", "api-gateway").
-			Str("Endpoint", c.Request.URL.RequestURI()).
-			Send()
-
+	r.GET("/health", loggingMiddleware(logger, "api-gateway"), func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "ok",
 		})
 	})
 
 	api := r.Group("/api")
-	{
-		api.Any("/auth/*proxyPath", rproxy.ReverseProxy("http://auth-service:8080"), func(c *gin.Context) {
-			logger.
-				Info().
-				Str("Client IP", c.ClientIP()).
-				Str("Proxy-Service", "auth").
-				Str("Endpoint", c.Request.URL.RequestURI()).
-				Send()
-		})
-
-		api.Any("/profiles/*proxyPath", rproxy.ReverseProxy("http://profiles-service:8080"), func(c *gin.Context) {
-			logger.
-				Info().
-				Str("Client IP", c.ClientIP()).
-				Str("Proxy-Service", "profiles").
-				Str("Endpoint", c.Request.URL.RequestURI()).
-				Send()
-		})
-
-		api.Any("/players/*proxyPath", rproxy.ReverseProxy("http://players-service:8080"), func(c *gin.Context) {
-			logger.
-				Info().
-				Str("Client IP", c.ClientIP()).
-				Str("Proxy-Service", "players").
-				Str("Endpoint", c.Request.URL.RequestURI()).
-				Send()
-		})
-
-		api.Any("/games/*proxyPath", rproxy.ReverseProxy("http://games-service:8080"), func(c *gin.Context) {
-			logger.
-				Info().
-				Str("Client IP", c.ClientIP()).
-				Str("Proxy-Service", "games").
-				Str("Endpoint", c.Request.URL.RequestURI()).
-				Send()
-		})
+	services := config.GetServices()
+	for _, service := range services {
+		serviceGroup := api.Group(service.PathPrefix)
+		serviceGroup.Use(loggingMiddleware(logger, service.Name))
+		serviceGroup.Any("/*servicePath", rproxy.ReverseProxy(service.URL))
 	}
 
-	r.Run()
+	if err := r.Run(); err != nil {
+		logger.Fatal().Err(err).Msg("Failed to start API Gateway")
+	}
 }
