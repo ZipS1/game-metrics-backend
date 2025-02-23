@@ -17,7 +17,7 @@ func main() {
 		logger.Info().
 			Str("Client IP", c.ClientIP()).
 			Str("Proxy-Service", "api-gateway").
-			Str("Endpoint", c.Request.URL.RawPath).
+			Str("Endpoint", c.Request.URL.RequestURI()).
 			Send()
 
 		c.JSON(http.StatusOK, gin.H{
