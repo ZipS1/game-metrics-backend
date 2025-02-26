@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"game-metrics/api-gateway/internal/config"
 	"game-metrics/api-gateway/internal/handlers"
 	"os"
 
@@ -11,11 +13,16 @@ import (
 func main() {
 	r := gin.Default()
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	cfg, err := config.LoadConfig("./configs")
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed to load configuration")
+	}
 
 	handlers.ConfigureHealthEndpoint(r, logger)
-	handlers.ConfigureApiEndpoints(r, logger)
+	handlers.ConfigureApiEndpoints(r, logger, cfg.Services)
 
-	if err := r.Run(); err != nil {
+	var port string = fmt.Sprintf(":%d", cfg.Port)
+	if err := r.Run(port); err != nil {
 		logger.Fatal().Err(err).Msg("Failed to start API Gateway")
 	}
 }
