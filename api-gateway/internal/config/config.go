@@ -1,6 +1,10 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"errors"
+
+	"github.com/spf13/viper"
+)
 
 type ServiceConfig struct {
 	Name       string `mapstructure:"name"`
@@ -19,7 +23,12 @@ func LoadConfig(configPath string) (*Config, error) {
 	viper.AddConfigPath(configPath)
 	viper.AutomaticEnv()
 
+	setDefaults()
 	if err := viper.ReadInConfig(); err != nil {
+		return nil, err
+	}
+
+	if err := validateConfig(); err != nil {
 		return nil, err
 	}
 
@@ -29,4 +38,15 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func setDefaults() {
+	viper.SetDefault("port", 8080)
+}
+
+func validateConfig() error {
+	if !viper.IsSet("services") {
+		return errors.New("no 'services' keyword in config found")
+	}
+	return nil
 }
