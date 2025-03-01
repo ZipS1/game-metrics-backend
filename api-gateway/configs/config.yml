@@ -1,0 +1,14 @@
+port: 8080
+services:
+  - name: "auth"
+    path_prefix: "/auth"
+    url: "http://auth-service:8080"
+  - name: "profiles"
+    path_prefix: "/profiles"
+    url: "http://profiles-service:8080"
+  - name: "players"
+    path_prefix: "/players"
+    url: "http://players-service:8080"
+  - name: "games"
+    path_prefix: "/games"
+    url: "http://games-service:8080"
