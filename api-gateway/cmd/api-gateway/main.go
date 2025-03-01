@@ -13,7 +13,9 @@ import (
 func main() {
 	r := gin.Default()
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
-	cfg, err := config.LoadConfig("./configs")
+
+	args := config.ParseArgs(logger)
+	cfg, err := config.LoadConfig(args.ConfigPath)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to load configuration")
 	}

@@ -2,6 +2,8 @@ package config
 
 import (
 	"errors"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -18,9 +20,9 @@ type Config struct {
 }
 
 func LoadConfig(configPath string) (*Config, error) {
-	viper.SetConfigName("config")
+	viper.SetConfigName(strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath)))
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(configPath)
+	viper.AddConfigPath(filepath.Dir(configPath))
 	viper.AutomaticEnv()
 
 	setDefaults()
