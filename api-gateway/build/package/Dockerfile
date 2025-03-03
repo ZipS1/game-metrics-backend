@@ -21,5 +21,6 @@ WORKDIR /app
 COPY --from=builder /app/api-gateway .
 COPY configs/config.yml .
 
-ENTRYPOINT ["./api-gateway", "--config", "config.yml"]
+ENTRYPOINT ["./api-gateway"]
+CMD ["--config", "config.yml"]
 EXPOSE 8080
