@@ -1,4 +1,4 @@
-SERVICES := api-gateway
+SERVICES := api-gateway auth-service
 
 BUILD_OPTIONS := -ldflags="-s -w"
 BUILD_VARS := CGO_ENABLED=0

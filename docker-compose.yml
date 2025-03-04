@@ -10,5 +10,14 @@ services:
       - gm_backend_net
     restart: on-failure
 
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: ./build/package/Dockerfile
+    container_name: auth-service
+    networks:
+      - gm_backend_net
+    restart: on-failure
+
 networks:
   gm_backend_net:
