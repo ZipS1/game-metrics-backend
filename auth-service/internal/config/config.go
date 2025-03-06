@@ -43,5 +43,5 @@ func LoadConfig(configPath string, logger zerolog.Logger) (*Config, error) {
 
 func setDefaults(defaults Config) {
 	viper.SetDefault("port", defaults.Port)
-	viper.SetDefault("path_prefix", defaults.BaseUriPrefix)
+	viper.SetDefault("base_uri_prefix", defaults.BaseUriPrefix)
 }
