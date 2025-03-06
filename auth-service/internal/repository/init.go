@@ -2,32 +2,29 @@ package repository
 
 import (
 	"game-metrics/auth-service/internal/models"
-	"sync"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var (
-	dbInstance *gorm.DB
-	once       sync.Once
-	initErr    error
+	connectionString string
 )
 
-func Init(dsn string) error {
-	once.Do(func() {
-		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		if err != nil {
-			initErr = err
-			return
-		}
-		if err := db.AutoMigrate(&models.User{}); err != nil {
-			initErr = err
-			return
-		}
+func Init(connStr string) error {
+	db, err := gorm.Open(postgres.Open(connStr))
+	if err != nil {
+		return err
+	}
 
-		dbInstance = db
-	})
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		return err
+	}
 
-	return initErr
+	connectionString = connStr
+	return nil
+}
+
+func isDatabaseInitialized() bool {
+	return connectionString != ""
 }
