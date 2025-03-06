@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"game-metrics/auth-service/internal/config"
 	"game-metrics/auth-service/internal/handlers"
+	"game-metrics/auth-service/internal/models"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -19,6 +22,13 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to load configuration")
 	}
+
+	db, err := gorm.Open(postgres.Open(cfg.Database.GetDsn()), &gorm.Config{})
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed to connect to the database")
+	}
+
+	db.AutoMigrate(&models.User{})
 
 	baseRouter := r.Group(cfg.BaseUriPrefix)
 	handlers.ConfigureHealthEndpoint(baseRouter, logger)

@@ -1,2 +1,10 @@
 port: 8080
 base_uri_prefix: /api/auth/
+database:
+  host: auth-service-db
+  port: 5432
+  user: postgres
+  password: postgres
+  dbname: gm_auth
+  sslmode: disable
+  timezone: Europe/Moscow
