@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
 
@@ -19,7 +18,7 @@ type DatabaseConfig struct {
 	Timezone string `mapstructure:"timezone"`
 }
 
-func (c *DatabaseConfig) GetDsn() string {
+func (c *DatabaseConfig) GetConnectionString() string {
 	templateString := "host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s"
 	return fmt.Sprintf(templateString, c.Host, c.User, c.Password, c.DbName, c.Port, c.SslMode, c.Timezone)
 }
@@ -30,7 +29,7 @@ type Config struct {
 	Database      DatabaseConfig `mapstructure:"database"`
 }
 
-func LoadConfig(configPath string, logger zerolog.Logger) (*Config, error) {
+func loadConfig(configPath string) (*Config, error) {
 	defaults := Config{
 		Port:          8080,
 		BaseUriPrefix: "/api/auth",

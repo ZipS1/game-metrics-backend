@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func ConfigureApiEndpoints(r *gin.RouterGroup, logger zerolog.Logger) {
+func configureApiEndpoints(r *gin.RouterGroup, logger zerolog.Logger) {
 	r.GET("hello", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusAccepted, gin.H{
 			"login": "hello",

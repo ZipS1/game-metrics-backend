@@ -11,7 +11,7 @@ type Args struct {
 	ConfigPath string
 }
 
-func ParseArgs(logger zerolog.Logger) *Args {
+func parseArgs(logger zerolog.Logger) *Args {
 	configPath := flag.String("config", "", "Path to the configuration file")
 	flag.Parse()
 
