@@ -3,13 +3,15 @@ SERVICES := api-gateway auth-service
 BUILD_OPTIONS := -ldflags="-s -w"
 BUILD_VARS := CGO_ENABLED=0
 
-.PHONY: up down build clean vet lint check
+.PHONY: up down restart build clean vet lint check
 
 up:
 	@docker compose up -d
 
 down:
 	@docker compose down -v --rmi local
+
+restart: down up
 
 build:
 	@for service in $(SERVICES); do \
