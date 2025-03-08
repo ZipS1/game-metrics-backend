@@ -12,5 +12,6 @@ func configureHealthEndpoint(r *gin.RouterGroup, logger zerolog.Logger) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "ok",
 		})
+		logger.Info().Msg("Healthcheck endpoint reached")
 	})
 }

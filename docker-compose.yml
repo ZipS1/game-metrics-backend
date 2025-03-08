@@ -29,6 +29,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=gm_auth
     container_name: auth-service-db
+    ports:
+      - "5433:5432"
     networks:
       - auth-service-net
     restart: on-failure

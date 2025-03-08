@@ -24,7 +24,3 @@ func Init(connStr string) error {
 	connectionString = connStr
 	return nil
 }
-
-func isDatabaseInitialized() bool {
-	return connectionString != ""
-}
