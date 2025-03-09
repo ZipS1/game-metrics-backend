@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"game-metrics/auth-service/internal/repository"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -34,18 +33,4 @@ func Register(logger zerolog.Logger) gin.HandlerFunc {
 
 		respondWithSuccess(ctx, fmt.Sprintf("User %s successfully created", requestBody.Email), logger)
 	}
-}
-
-func respondWithError(ctx *gin.Context, err error, message string, logger zerolog.Logger) {
-	ctx.JSON(http.StatusBadRequest, gin.H{
-		"error": message,
-	})
-	logger.Error().Err(err).Msg(message)
-}
-
-func respondWithSuccess(ctx *gin.Context, message string, logger zerolog.Logger) {
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": message,
-	})
-	logger.Info().Msg(message)
 }
