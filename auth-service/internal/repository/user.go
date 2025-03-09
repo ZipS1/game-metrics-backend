@@ -25,7 +25,7 @@ func GetUserHashedPasswordByEmail(email string) (string, error) {
 	}
 
 	var user models.User
-	if result := db.Where("email = ?", email).First(&user); result.Error != nil {
+	if result := db.First(&user, "email = ?", email); result.Error != nil {
 		return "", result.Error
 	}
 	return user.PasswordHash, nil
