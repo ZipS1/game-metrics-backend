@@ -1,8 +1,8 @@
 port: 8080
 base_uri_prefix: /api/auth/
 auth_tokens:
-  jwt_expiration_time: 1440
-  refresh_token_expiration_time: 9999
+  jwt_expiration_time: 24h
+  refresh_token_expiration_time: 8760h
 database:
   host: auth-service-db
   port: 5432

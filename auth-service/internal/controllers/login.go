@@ -39,7 +39,7 @@ func Login(jwtExpirationTime time.Duration, logger zerolog.Logger) gin.HandlerFu
 			respondWithError(ctx, err, "Failed to generate access token", logger)
 		}
 
-		ctx.SetCookie("access_token", jwtToken, int(jwtExpirationTime), "/", os.Getenv("DOMAIN_NAME"), true, true)
+		ctx.SetCookie("access_token", jwtToken, int(jwtExpirationTime.Seconds()), "/", os.Getenv("DOMAIN_NAME"), true, true)
 		respondWithSuccess(ctx, fmt.Sprintf("User %s successfully logged in", requestBody.Email), logger)
 	}
 }
