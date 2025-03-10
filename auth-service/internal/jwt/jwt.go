@@ -1,14 +1,9 @@
 package jwt
 
 import (
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-)
-
-var (
-	JwtSecretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 )
 
 type CustomClaims struct {
@@ -21,7 +16,7 @@ type UserClaims struct {
 	LastName  string
 }
 
-func GenerateNewTokenForUser(userClaims UserClaims, expirationTime time.Duration) (string, error) {
+func GenerateNewTokenForUser(userClaims UserClaims, expirationTime time.Duration, secretKey string) (string, error) {
 	claims := &CustomClaims{
 		UserClaims: userClaims,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -31,7 +26,7 @@ func GenerateNewTokenForUser(userClaims UserClaims, expirationTime time.Duration
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString(JwtSecretKey)
+	signedToken, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err
 	}

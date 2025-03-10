@@ -1,18 +1,16 @@
 package controllers
 
 import (
-	"fmt"
+	"game-metrics/auth-service/internal/config"
 	"game-metrics/auth-service/internal/jwt"
 	"game-metrics/auth-service/internal/repository"
-	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(jwtExpirationTime time.Duration, logger zerolog.Logger) gin.HandlerFunc {
+func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var requestBody struct {
 			Email    string `json:"email" binding:"required,email"`
@@ -34,12 +32,19 @@ func Login(jwtExpirationTime time.Duration, logger zerolog.Logger) gin.HandlerFu
 			return
 		}
 
-		jwtToken, err := jwt.GenerateNewTokenForUser(jwt.UserClaims{FirstName: user.FirstName, LastName: user.LastName}, jwtExpirationTime)
+		jwtToken, err := jwt.GenerateNewTokenForUser(jwt.UserClaims{
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+		},
+			config.AuthTokens.JwtExpirationTime,
+			config.AuthTokens.JwtSecretKey,
+		)
 		if err != nil {
 			respondWithError(ctx, err, "Failed to generate access token", logger)
+			return
 		}
 
-		ctx.SetCookie("access_token", jwtToken, int(jwtExpirationTime.Seconds()), "/", os.Getenv("DOMAIN_NAME"), true, true)
-		respondWithSuccess(ctx, fmt.Sprintf("User %s successfully logged in", requestBody.Email), logger)
+		ctx.SetCookie("access_token", jwtToken, int(config.AuthTokens.JwtExpirationTime.Seconds()), "/", config.DomainName, true, true)
+		respondWithSuccess(ctx, "Successfully logged in", logger)
 	}
 }

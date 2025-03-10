@@ -7,8 +7,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func ConfigureRouter(r *gin.Engine, baseUriPrefix string, authTokensConfig config.AuthTokensConfig, logger zerolog.Logger) {
+func ConfigureRouter(r *gin.Engine, baseUriPrefix string, config config.Config, logger zerolog.Logger) {
 	baseRouter := r.Group(baseUriPrefix)
 	configureHealthEndpoint(baseRouter, logger)
-	configureApiEndpoints(baseRouter, authTokensConfig, logger)
+	configureApiEndpoints(baseRouter, config, logger)
 }

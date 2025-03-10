@@ -25,11 +25,13 @@ func (c *DatabaseConfig) GetConnectionString() string {
 }
 
 type AuthTokensConfig struct {
+	JwtSecretKey               string        `mapstructure:"jwt_secret_key" env:"JWT_SECRET_KEY"`
 	JwtExpirationTime          time.Duration `mapstructure:"jwt_expiration_time"`
 	RefreshTokenExpirationTime time.Duration `mapstructure:"refresh_token_expiration_time"`
 }
 
 type Config struct {
+	DomainName    string           `mapstructure:"domain_name"`
 	Port          int              `mapstructure:"port"`
 	BaseUriPrefix string           `mapstructure:"base_uri_prefix"`
 	AuthTokens    AuthTokensConfig `mapstructure:"auth_tokens"`
@@ -37,24 +39,10 @@ type Config struct {
 }
 
 func loadConfig(configPath string) (*Config, error) {
-	defaults := Config{
-		Port:          8080,
-		BaseUriPrefix: "/api/auth",
-		AuthTokens: AuthTokensConfig{
-			JwtExpirationTime:          time.Duration(time.Now().Local().Day()),
-			RefreshTokenExpirationTime: time.Duration(time.Now().Year()),
-		},
-		Database: DatabaseConfig{
-			Port:     5432,
-			Timezone: "UTC",
-		},
-	}
-
 	viper.SetConfigName(strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath)))
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(filepath.Dir(configPath))
-	viper.AutomaticEnv()
-	setDefaults(defaults)
+	configureEnvVarsAndDefaults()
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
@@ -72,39 +60,40 @@ func loadConfig(configPath string) (*Config, error) {
 	return &cfg, nil
 }
 
-func setDefaults(defaults Config) {
-	viper.SetDefault("port", defaults.Port)
-	viper.SetDefault("base_uri_prefix", defaults.BaseUriPrefix)
-	viper.SetDefault("auth_tokens.jwt_expiration_time", defaults.AuthTokens.JwtExpirationTime)
-	viper.SetDefault("auth_tokens.refresh_token_expiration_time", defaults.AuthTokens.RefreshTokenExpirationTime)
-	viper.SetDefault("database.port", defaults.Database.Port)
-	viper.SetDefault("database.timezone", defaults.Database.Timezone)
-}
-
 func validateConfig() error {
 	errorMessageTemplate := "no '%s' keyword found in config"
 
-	if !viper.IsSet("database") {
-		return fmt.Errorf(errorMessageTemplate, "database")
+	if err := validateNestedYaml(errorMessageTemplate, "database", []string{"host", "user", "password", "dbname", "sslmode"}); err != nil {
+		return err
 	}
-	requiredDatabaseFields := []string{"host", "user", "password", "dbname", "sslmode"}
-	for _, field := range requiredDatabaseFields {
-		keywordFullName := fmt.Sprintf("database.%s", field)
+
+	if err := validateNestedYaml(errorMessageTemplate, "auth_tokens", []string{"jwt_secret_key"}); err != nil {
+		return err
+	}
+
+	if err := validateSingleKeyword(errorMessageTemplate, "domain_name"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateSingleKeyword(errorMessageTemplate string, keyword string) error {
+	if !viper.IsSet(keyword) {
+		return fmt.Errorf(errorMessageTemplate, keyword)
+	}
+	return nil
+}
+
+func validateNestedYaml(errorMessageTemplate string, topLevelKeyword string, requiredChildren []string) error {
+	if !viper.IsSet(topLevelKeyword) {
+		return fmt.Errorf(errorMessageTemplate, topLevelKeyword)
+	}
+	for _, child := range requiredChildren {
+		keywordFullName := fmt.Sprintf("%s.%s", topLevelKeyword, child)
 		if !viper.IsSet(keywordFullName) {
 			return fmt.Errorf(errorMessageTemplate, keywordFullName)
 		}
 	}
-
-	if !viper.IsSet("auth_tokens") {
-		return fmt.Errorf(errorMessageTemplate, "auth_tokens")
-	}
-	requiredAuthTokensFields := []string{"jwt_expiration_time", "refresh_token_expiration_time"}
-	for _, field := range requiredAuthTokensFields {
-		keywordFullName := fmt.Sprintf("auth_tokens.%s", field)
-		if !viper.IsSet(keywordFullName) {
-			return fmt.Errorf(errorMessageTemplate, keywordFullName)
-		}
-	}
-
 	return nil
 }

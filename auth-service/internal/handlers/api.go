@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func configureApiEndpoints(r *gin.RouterGroup, authTokensConfig config.AuthTokensConfig, logger zerolog.Logger) {
+func configureApiEndpoints(r *gin.RouterGroup, config config.Config, logger zerolog.Logger) {
 	r.POST("/register", controllers.Register(logger))
-	r.POST("/login", controllers.Login(authTokensConfig.JwtExpirationTime, logger))
+	r.POST("/login", controllers.Login(config, logger))
 }
