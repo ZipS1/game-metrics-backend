@@ -11,6 +11,9 @@ services:
     restart: on-failure
 
   auth-service:
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DOMAIN_NAME=localhost
     build:
       context: ./auth-service
       dockerfile: ./build/package/Dockerfile

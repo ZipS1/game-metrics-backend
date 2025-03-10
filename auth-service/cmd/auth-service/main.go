@@ -24,7 +24,7 @@ func main() {
 		logger.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
 
-	handlers.ConfigureRouter(r, cfg.BaseUriPrefix, logger)
+	handlers.ConfigureRouter(r, cfg.BaseUriPrefix, cfg.AuthTokens, logger)
 
 	var port string = fmt.Sprintf(":%d", cfg.Port)
 	if err := r.Run(port); err != nil {

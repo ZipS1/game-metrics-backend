@@ -1,2 +1,5 @@
 # built executables
 **/target
+
+# dotenv
+**/.env

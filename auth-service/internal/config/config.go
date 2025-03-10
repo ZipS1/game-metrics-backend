@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -23,16 +24,26 @@ func (c *DatabaseConfig) GetConnectionString() string {
 	return fmt.Sprintf(templateString, c.Host, c.User, c.Password, c.DbName, c.Port, c.SslMode, c.Timezone)
 }
 
+type AuthTokensConfig struct {
+	JwtExpirationTime          time.Duration `mapstructure:"jwt_expiration_time"`
+	RefreshTokenExpirationTime time.Duration `mapstructure:"refresh_token_expiration_time"`
+}
+
 type Config struct {
-	Port          int            `mapstructure:"port"`
-	BaseUriPrefix string         `mapstructure:"base_uri_prefix"`
-	Database      DatabaseConfig `mapstructure:"database"`
+	Port          int              `mapstructure:"port"`
+	BaseUriPrefix string           `mapstructure:"base_uri_prefix"`
+	AuthTokens    AuthTokensConfig `mapstructure:"auth_tokens"`
+	Database      DatabaseConfig   `mapstructure:"database"`
 }
 
 func loadConfig(configPath string) (*Config, error) {
 	defaults := Config{
 		Port:          8080,
 		BaseUriPrefix: "/api/auth",
+		AuthTokens: AuthTokensConfig{
+			JwtExpirationTime:          time.Duration(time.Now().Local().Day()),
+			RefreshTokenExpirationTime: time.Duration(time.Now().Year()),
+		},
 		Database: DatabaseConfig{
 			Port:     5432,
 			Timezone: "UTC",
@@ -64,6 +75,8 @@ func loadConfig(configPath string) (*Config, error) {
 func setDefaults(defaults Config) {
 	viper.SetDefault("port", defaults.Port)
 	viper.SetDefault("base_uri_prefix", defaults.BaseUriPrefix)
+	viper.SetDefault("auth_tokens.jwt_expiration_time", defaults.AuthTokens.JwtExpirationTime)
+	viper.SetDefault("auth_tokens.refresh_token_expiration_time", defaults.AuthTokens.RefreshTokenExpirationTime)
 	viper.SetDefault("database.port", defaults.Database.Port)
 	viper.SetDefault("database.timezone", defaults.Database.Timezone)
 }
@@ -77,6 +90,17 @@ func validateConfig() error {
 	requiredDatabaseFields := []string{"host", "user", "password", "dbname", "sslmode"}
 	for _, field := range requiredDatabaseFields {
 		keywordFullName := fmt.Sprintf("database.%s", field)
+		if !viper.IsSet(keywordFullName) {
+			return fmt.Errorf(errorMessageTemplate, keywordFullName)
+		}
+	}
+
+	if !viper.IsSet("auth_tokens") {
+		return fmt.Errorf(errorMessageTemplate, "auth_tokens")
+	}
+	requiredAuthTokensFields := []string{"jwt_expiration_time", "refresh_token_expiration_time"}
+	for _, field := range requiredAuthTokensFields {
+		keywordFullName := fmt.Sprintf("auth_tokens.%s", field)
 		if !viper.IsSet(keywordFullName) {
 			return fmt.Errorf(errorMessageTemplate, keywordFullName)
 		}
