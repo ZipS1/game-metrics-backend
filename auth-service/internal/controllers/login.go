@@ -4,6 +4,7 @@ import (
 	"game-metrics/auth-service/internal/config"
 	"game-metrics/auth-service/internal/jwt"
 	"game-metrics/auth-service/internal/repository"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -17,18 +18,18 @@ func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 			Password string `json:"password" binding:"required,min=8"`
 		}
 		if err := ctx.ShouldBindJSON(&requestBody); err != nil {
-			respondWithError(ctx, err, "Incorrect JSON passed", logger)
+			respondWithError(ctx, err, http.StatusBadRequest, "Incorrect JSON passed", logger)
 			return
 		}
 
 		user, err := repository.GetUserByEmail(requestBody.Email)
 		if err != nil {
-			respondWithError(ctx, err, "Invalid email or password", logger)
+			respondWithError(ctx, err, http.StatusBadRequest, "Invalid email or password", logger)
 			return
 		}
 
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(requestBody.Password)); err != nil {
-			respondWithError(ctx, err, "Invalid email or password", logger)
+			respondWithError(ctx, err, http.StatusBadRequest, "Invalid email or password", logger)
 			return
 		}
 
@@ -40,11 +41,11 @@ func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 			config.AuthTokens.JwtSecretKey,
 		)
 		if err != nil {
-			respondWithError(ctx, err, "Failed to generate access token", logger)
+			respondWithError(ctx, err, http.StatusInternalServerError, "Failed to generate access token", logger)
 			return
 		}
 
 		ctx.SetCookie("access_token", jwtToken, int(config.AuthTokens.JwtExpirationTime.Seconds()), "/", config.DomainName, true, true)
-		respondWithSuccess(ctx, "Successfully logged in", logger)
+		respondWithSuccess(ctx, http.StatusOK, "Successfully logged in", logger)
 	}
 }
