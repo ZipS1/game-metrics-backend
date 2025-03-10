@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"game-metrics/auth-service/internal/models"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -16,12 +17,16 @@ type UserClaims struct {
 	LastName  string
 }
 
-func GenerateNewTokenForUser(userClaims UserClaims, expirationTime time.Duration, secretKey string) (string, error) {
+func GenerateNewTokenForUser(user models.User, expirationTime time.Duration, secretKey string) (string, error) {
 	claims := &CustomClaims{
-		UserClaims: userClaims,
+		UserClaims: UserClaims{
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
 			Issuer:    "game-metrics/auth-service",
+			Subject:   user.ID.String(),
 		},
 	}
 

@@ -33,10 +33,8 @@ func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		jwtToken, err := jwt.GenerateNewTokenForUser(jwt.UserClaims{
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-		},
+		jwtToken, err := jwt.GenerateNewTokenForUser(
+			*user,
 			config.AuthTokens.JwtExpirationTime,
 			config.AuthTokens.JwtSecretKey,
 		)
