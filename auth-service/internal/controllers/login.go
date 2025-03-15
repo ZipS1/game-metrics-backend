@@ -35,15 +35,15 @@ func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 
 		jwtToken, err := jwt.GenerateNewTokenForUser(
 			*user,
-			config.AuthTokens.JwtExpirationTime,
-			config.AuthTokens.JwtSecretKey,
+			config.JwtToken.JwtExpirationTime,
+			config.JwtToken.Ed25519PrivateKey,
 		)
 		if err != nil {
 			respondWithError(ctx, err, http.StatusInternalServerError, "Failed to generate access token", logger)
 			return
 		}
 
-		ctx.SetCookie("access_token", jwtToken, int(config.AuthTokens.JwtExpirationTime.Seconds()), "/", config.DomainName, true, true)
+		ctx.SetCookie("access_token", jwtToken, int(config.JwtToken.JwtExpirationTime.Seconds()), "/", config.DomainName, true, true)
 		respondWithSuccess(ctx, http.StatusOK, "Successfully logged in", logger)
 	}
 }

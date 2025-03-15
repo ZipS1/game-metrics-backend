@@ -21,6 +21,9 @@ WORKDIR /app
 COPY --from=builder /app/auth-service .
 COPY configs/config.yml .
 
+COPY configs/public.pem .
+COPY configs/private.pem .
+
 ENTRYPOINT ["./auth-service"]
 CMD ["--config", "config.yml"]
 EXPOSE 8080

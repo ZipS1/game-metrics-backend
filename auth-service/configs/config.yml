@@ -1,6 +1,8 @@
 port: 8080
 base_uri_prefix: /api/auth/
-auth_tokens:
+jwt_token:
+  public_key_filepath: /app/public.pem
+  private_key_filepath: /app/private.pem
   jwt_expiration_time: 24h
   refresh_token_expiration_time: 8760h
 database:

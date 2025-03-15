@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"crypto/ed25519"
 	"game-metrics/auth-service/internal/models"
 	"time"
 
@@ -17,7 +18,7 @@ type UserClaims struct {
 	LastName  string
 }
 
-func GenerateNewTokenForUser(user models.User, expirationTime time.Duration, secretKey string) (string, error) {
+func GenerateNewTokenForUser(user models.User, expirationTime time.Duration, privateKey ed25519.PrivateKey) (string, error) {
 	claims := &CustomClaims{
 		UserClaims: UserClaims{
 			FirstName: user.FirstName,
@@ -30,8 +31,8 @@ func GenerateNewTokenForUser(user models.User, expirationTime time.Duration, sec
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(secretKey))
+	token := jwt.NewWithClaims(jwt.SigningMethodEdDSA, claims)
+	signedToken, err := token.SignedString(privateKey)
 	if err != nil {
 		return "", err
 	}
