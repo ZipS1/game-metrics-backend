@@ -1,9 +1,11 @@
 package config
 
-import "github.com/rs/zerolog"
+func ConstructConfig() (*Config, error) {
+	args, err := parseArgs()
+	if err != nil {
+		return nil, err
+	}
 
-func ConstructConfig(logger zerolog.Logger) (*Config, error) {
-	args := parseArgs(logger)
 	cfg, err := loadConfig(args.ConfigPath)
 	if err != nil {
 		return nil, err
