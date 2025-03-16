@@ -8,6 +8,6 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func configureInternalEndpoints(r *gin.RouterGroup, config config.JwtTokenConfig, logger zerolog.Logger) {
-	r.GET("/jwks", controllers.Jwks(config, logger))
+func configureInternalEndpoints(r *gin.RouterGroup, config config.Config, logger zerolog.Logger) {
+	r.GET("/jwks", controllers.Jwks(config.JwtToken.Ed25519PublicKey, logger))
 }
