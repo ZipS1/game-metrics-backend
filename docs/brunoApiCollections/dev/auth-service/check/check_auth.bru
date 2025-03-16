@@ -1,0 +1,11 @@
+meta {
+  name: check_auth
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8080/api/auth/check
+  body: none
+  auth: none
+}
