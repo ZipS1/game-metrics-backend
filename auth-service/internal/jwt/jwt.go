@@ -2,6 +2,8 @@ package jwt
 
 import (
 	"crypto/ed25519"
+	"errors"
+	"fmt"
 	"game-metrics/auth-service/internal/models"
 	"time"
 
@@ -38,4 +40,27 @@ func GenerateNewTokenForUser(user models.User, expirationTime time.Duration, pri
 	}
 
 	return signedToken, nil
+}
+
+func ValidateToken(tokenString string, key ed25519.PublicKey) error {
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if token.Method.Alg() != jwt.SigningMethodEdDSA.Alg() {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return key, nil
+	})
+	if err != nil {
+		return err
+	}
+
+	claims, ok := token.Claims.(*CustomClaims)
+	if !ok || !token.Valid {
+		return errors.New("invalid token")
+	}
+
+	if claims.ExpiresAt == nil || claims.ExpiresAt.Time.Before(time.Now()) {
+		return errors.New("token has expired")
+	}
+
+	return nil
 }
