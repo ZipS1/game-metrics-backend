@@ -12,7 +12,6 @@ services:
 
   auth-service:
     environment:
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DOMAIN_NAME=localhost
     build:
       context: ./auth-service
