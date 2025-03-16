@@ -8,7 +8,10 @@ import (
 )
 
 func ConfigureRouter(r *gin.Engine, config config.Config, logger zerolog.Logger) {
-	baseRouter := r.Group(config.BaseUriPrefix)
-	configureHealthEndpoint(baseRouter, logger)
-	configureApiEndpoints(baseRouter, config, logger)
+	internalRouter := r.Group("/internal")
+	configureInternalEndpoints(internalRouter, config.JwtToken, logger)
+
+	publicRouter := r.Group(config.BaseUriPrefix)
+	configureHealthEndpoint(publicRouter, logger)
+	configureApiEndpoints(publicRouter, config, logger)
 }
