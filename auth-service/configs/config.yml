@@ -1,5 +1,6 @@
 port: 8080
-base_uri_prefix: /api/auth/
+public_uri_prefix: /api/auth
+internal_uri_prefix: /internal
 jwt_token:
   public_key_filepath: /app/public.pem
   private_key_filepath: /app/private.pem

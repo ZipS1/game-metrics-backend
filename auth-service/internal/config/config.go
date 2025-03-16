@@ -40,11 +40,12 @@ type JwtTokenConfig struct {
 }
 
 type Config struct {
-	DomainName    string         `mapstructure:"domain_name"`
-	Port          int            `mapstructure:"port"`
-	BaseUriPrefix string         `mapstructure:"base_uri_prefix"`
-	JwtToken      JwtTokenConfig `mapstructure:"jwt_token"`
-	Database      DatabaseConfig `mapstructure:"database"`
+	DomainName        string         `mapstructure:"domain_name"`
+	Port              int            `mapstructure:"port"`
+	PublicUriPrefix   string         `mapstructure:"public_uri_prefix"`
+	InternalUriPrefix string         `mapstructure:"internal_uri_prefix"`
+	JwtToken          JwtTokenConfig `mapstructure:"jwt_token"`
+	Database          DatabaseConfig `mapstructure:"database"`
 }
 
 func loadConfig(configPath string) (*Config, error) {
