@@ -19,15 +19,18 @@ func RequireAuth(provider PublicKeyProvider) gin.HandlerFunc {
 		token, err := getJwt(ctx)
 		if err != nil {
 			abortUnauthorized(ctx, err)
+			return
 		}
 
 		key, err := provider.GetPublicKey()
 		if err != nil {
 			abortInternalError(ctx, err)
+			return
 		}
 
 		if err := jwt.ValidateToken(token, key); err != nil {
 			abortUnauthorized(ctx, err)
+			return
 		}
 
 		ctx.Next()
@@ -47,7 +50,13 @@ func abortInternalError(ctx *gin.Context, err error) {
 func getJwt(ctx *gin.Context) (string, error) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
-		return "", errors.New("authorization header missing")
+		cookieValue, err := ctx.Cookie("access_token")
+		if err != nil {
+			return "", err
+		}
+
+		return cookieValue, nil
+
 	}
 
 	parts := strings.Fields(authHeader)
