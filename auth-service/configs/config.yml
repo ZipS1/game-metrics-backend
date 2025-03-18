@@ -1,0 +1,16 @@
+port: 8080
+public_uri_prefix: /api/auth
+internal_uri_prefix: /internal
+jwt_token:
+  public_key_filepath: /app/public.pem
+  private_key_filepath: /app/private.pem
+  jwt_expiration_time: 24h
+  refresh_token_expiration_time: 8760h
+database:
+  host: auth-service-db
+  port: 5432
+  user: postgres
+  password: postgres
+  dbname: gm_auth
+  sslmode: disable
+  timezone: Europe/Moscow

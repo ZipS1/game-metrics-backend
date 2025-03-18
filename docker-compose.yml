@@ -7,8 +7,36 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - gm_backend_net
+      - gm-backend-net
+    restart: on-failure
+
+  auth-service:
+    environment:
+      - DOMAIN_NAME=localhost
+    build:
+      context: ./auth-service
+      dockerfile: ./build/package/Dockerfile
+    container_name: auth-service
+    networks:
+      - gm-backend-net
+      - auth-service-net
+    restart: on-failure
+    depends_on:
+      - auth-service-db
+
+  auth-service-db:
+    build:
+      dockerfile: ./auth-service/build/package/db.Dockerfile
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gm_auth
+    container_name: auth-service-db
+    ports:
+      - "5433:5432"
+    networks:
+      - auth-service-net
     restart: on-failure
 
 networks:
-  gm_backend_net:
+  gm-backend-net:
+  auth-service-net:
