@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"game-metrics/auth-service/internal/repository"
 	"net/http"
 
@@ -22,15 +23,21 @@ func Register(logger zerolog.Logger) gin.HandlerFunc {
 
 		hash, err := bcrypt.GenerateFromPassword([]byte(requestBody.Password), bcrypt.DefaultCost)
 		if err != nil {
-			respondWithError(ctx, err, http.StatusBadRequest, "Failed to hash password", logger)
+			respondWithError(ctx, err, http.StatusInternalServerError, "Failed to hash password", logger)
 			return
 		}
 
 		if _, err := repository.CreateUser(requestBody.Email, string(hash)); err != nil {
-			respondWithError(ctx, err, http.StatusBadRequest, "Failed to create user", logger)
+			switch err.Error() {
+			case "duplicated key not allowed":
+				respondWithError(ctx, err, http.StatusConflict, "User with this email already registered", logger)
+			default:
+				respondWithError(ctx, err, http.StatusInternalServerError, "Failed to create user", logger)
+			}
 			return
 		}
 
 		respondWithSuccess(ctx, http.StatusCreated, "Successfully registered", logger)
+		logger.Info().Msg(fmt.Sprintf("User %s successfully registered", requestBody.Email))
 	}
 }
