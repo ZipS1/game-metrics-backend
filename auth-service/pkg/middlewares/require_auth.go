@@ -52,7 +52,7 @@ func getJwt(ctx *gin.Context) (string, error) {
 	if authHeader == "" {
 		cookieValue, err := ctx.Cookie("access_token")
 		if err != nil {
-			return "", err
+			return "", errors.New("neither access_token cookie nor Authorization header is present")
 		}
 
 		return cookieValue, nil
