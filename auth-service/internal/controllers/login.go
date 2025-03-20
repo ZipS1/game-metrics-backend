@@ -25,12 +25,12 @@ func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 
 		user, err := repository.GetUserByEmail(requestBody.Email)
 		if err != nil {
-			respondWithError(ctx, err, http.StatusBadRequest, "Invalid email or password", logger)
+			respondWithError(ctx, err, http.StatusUnauthorized, "Invalid email or password", logger)
 			return
 		}
 
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(requestBody.Password)); err != nil {
-			respondWithError(ctx, err, http.StatusBadRequest, "Invalid email or password", logger)
+			respondWithError(ctx, err, http.StatusUnauthorized, "Invalid email or password", logger)
 			return
 		}
 
