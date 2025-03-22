@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func Register(logger zerolog.Logger) gin.HandlerFunc {
@@ -28,8 +29,8 @@ func Register(logger zerolog.Logger) gin.HandlerFunc {
 		}
 
 		if _, err := repository.CreateUser(requestBody.Email, string(hash)); err != nil {
-			switch err.Error() {
-			case "duplicated key not allowed":
+			switch err {
+			case gorm.ErrDuplicatedKey:
 				respondWithError(ctx, err, http.StatusConflict, "User with this email already registered", logger)
 			default:
 				respondWithError(ctx, err, http.StatusInternalServerError, "Failed to create user", logger)
@@ -37,7 +38,6 @@ func Register(logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		respondWithSuccess(ctx, http.StatusCreated, "Successfully registered", logger)
-		logger.Info().Msg(fmt.Sprintf("User %s successfully registered", requestBody.Email))
+		respondWithSuccess(ctx, http.StatusCreated, fmt.Sprintf("User %s successfully registered", requestBody.Email), logger)
 	}
 }
