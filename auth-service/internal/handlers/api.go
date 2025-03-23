@@ -17,5 +17,5 @@ func configureApiEndpoints(r *gin.RouterGroup, config config.Config, logger zero
 
 	r.POST("/register", controllers.Register(logger))
 	r.POST("/login", controllers.Login(config, logger))
-	r.GET("/check", middlewares.RequireAuth(publicKeyProviderMock), controllers.CheckAuth(logger))
+	r.GET("/check", middlewares.RequireAuth(publicKeyProviderMock, logger), controllers.CheckAuth(logger))
 }

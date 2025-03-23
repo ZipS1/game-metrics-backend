@@ -8,28 +8,29 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type PublicKeyProvider interface {
 	GetPublicKey() (ed25519.PublicKey, error)
 }
 
-func RequireAuth(provider PublicKeyProvider) gin.HandlerFunc {
+func RequireAuth(provider PublicKeyProvider, logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := getJwt(ctx)
 		if err != nil {
-			abortUnauthorized(ctx, err)
+			abortUnauthorized(ctx, err, logger)
 			return
 		}
 
 		key, err := provider.GetPublicKey()
 		if err != nil {
-			abortInternalError(ctx, err)
+			abortInternalError(ctx, err, logger)
 			return
 		}
 
 		if err := jwt.ValidateToken(token, key); err != nil {
-			abortUnauthorized(ctx, err)
+			abortUnauthorized(ctx, err, logger)
 			return
 		}
 
@@ -37,12 +38,14 @@ func RequireAuth(provider PublicKeyProvider) gin.HandlerFunc {
 	}
 }
 
-func abortUnauthorized(ctx *gin.Context, err error) {
+func abortUnauthorized(ctx *gin.Context, err error, logger zerolog.Logger) {
+	logger.Info().Err(err).Msg("Auth middleware failed: unauthorized")
 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 	ctx.Abort()
 }
 
-func abortInternalError(ctx *gin.Context, err error) {
+func abortInternalError(ctx *gin.Context, err error, logger zerolog.Logger) {
+	logger.Info().Err(err).Msg("Auth middleware failed: internal error")
 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	ctx.Abort()
 }
@@ -52,7 +55,7 @@ func getJwt(ctx *gin.Context) (string, error) {
 	if authHeader == "" {
 		cookieValue, err := ctx.Cookie("access_token")
 		if err != nil {
-			return "", err
+			return "", errors.New("neither access_token cookie nor Authorization header is present")
 		}
 
 		return cookieValue, nil
