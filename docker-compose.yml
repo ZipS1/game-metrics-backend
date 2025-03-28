@@ -1,6 +1,8 @@
 include:
   - path: ./api-gateway/deployments/dev/docker-compose.yml
     project_directory: ./
+  - path: ./rabbitmq/docker-compose.yml
+    project_directory: ./
   - path: ./auth-service/deployments/dev/docker-compose.yml
     project_directory: ./
 
