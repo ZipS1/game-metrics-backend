@@ -1,4 +1,4 @@
-package handlers
+package api_handlers
 
 import (
 	"game-metrics/activity-service/internal/config"

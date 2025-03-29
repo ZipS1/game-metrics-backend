@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"game-metrics/activity-service/internal/amqp"
+	"game-metrics/activity-service/internal/amqp_handlers"
+	"game-metrics/activity-service/internal/api_handlers"
 	"game-metrics/activity-service/internal/config"
-	"game-metrics/activity-service/internal/handlers"
 	"game-metrics/activity-service/internal/repository"
 	"os"
 
@@ -31,7 +32,8 @@ func main() {
 	}
 	defer closeConn()
 
-	handlers.ConfigureRouter(r, *cfg, logger)
+	amqp_handlers.ConfigureHandlers(cfg.AMQP, logger)
+	api_handlers.ConfigureRouter(r, *cfg, logger)
 
 	var port string = fmt.Sprintf(":%d", cfg.Port)
 	if err := r.Run(port); err != nil {
