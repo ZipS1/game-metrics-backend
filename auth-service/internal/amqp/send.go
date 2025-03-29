@@ -2,36 +2,43 @@ package amqp
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog"
 )
 
-func SendMessage(message []byte, logger zerolog.Logger) error {
-	if !connConfig.isInitialized() {
+func SendMessage(event string, payload map[string]interface{}, logger zerolog.Logger) error {
+	if !brokerState.isInitialized() {
 		return errors.New("AMQP connection is not initialized")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	messageBody, err := json.Marshal(payload)
+	if err != nil {
+		logger.Error().Err(err).Msg("Failed to serialize payload to JSON")
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), brokerTimeout)
 	defer cancel()
 
-	err := connConfig.ch.PublishWithContext(ctx,
+	err = brokerState.ch.PublishWithContext(ctx,
 		exchangeName,
-		"",
+		event,
 		false,
 		false,
 		amqp.Publishing{
 			ContentType: "application/json",
-			Body:        message,
+			Body:        messageBody,
 		},
 	)
 
 	if err != nil {
-		logger.Error().Err(err).Msg("Failed to publish message")
+		logger.Error().Str("event", event).Err(err).Msg("Failed to publish message")
 		return err
 	}
 
-	logger.Info().Msg("Message published successfully")
+	logger.Info().Str("event", event).Msg("Message published successfully")
 	return nil
 }

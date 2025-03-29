@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"game-metrics/auth-service/internal/amqp"
 	"game-metrics/auth-service/internal/repository"
 	"net/http"
 
@@ -28,7 +29,8 @@ func Register(logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		if _, err := repository.CreateUser(requestBody.Email, string(hash)); err != nil {
+		userId, err := repository.CreateUser(requestBody.Email, string(hash))
+		if err != nil {
 			switch err {
 			case gorm.ErrDuplicatedKey:
 				respondWithError(ctx, err, http.StatusConflict, "User with this email already registered", logger)
@@ -38,6 +40,9 @@ func Register(logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
+		amqp.SendMessage("user_registered", map[string]interface{}{
+			"id": userId,
+		}, logger)
 		respondWithSuccess(ctx, http.StatusCreated, fmt.Sprintf("User %s successfully registered", requestBody.Email), logger)
 	}
 }

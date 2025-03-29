@@ -12,17 +12,17 @@ const (
 )
 
 var (
-	connConfig *amqpState
-	timeout    time.Duration
+	brokerState   *amqpState
+	brokerTimeout time.Duration
 )
 
-func Init(brokerUri string, brokerTimeout time.Duration) (func(), error) {
+func Init(uri string, timeout time.Duration) (func(), error) {
 	var state amqpState
 	var initErr error
 
-	timeout = brokerTimeout
+	brokerTimeout = timeout
 	state.initOnce.Do(func() {
-		state.conn, initErr = amqp.Dial(brokerUri)
+		state.conn, initErr = amqp.Dial(uri)
 		if initErr != nil {
 			initErr = fmt.Errorf("failed to connect to message broker: %w", initErr)
 			return
@@ -51,7 +51,7 @@ func Init(brokerUri string, brokerTimeout time.Duration) (func(), error) {
 		}
 	})
 
-	connConfig = &state
+	brokerState = &state
 
 	if initErr != nil {
 		return nil, initErr
