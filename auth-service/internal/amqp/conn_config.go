@@ -6,14 +6,14 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type ConnConfig struct {
+type amqpState struct {
 	ch        *amqp.Channel
 	initOnce  sync.Once
 	closeOnce sync.Once
 	conn      *amqp.Connection
 }
 
-func (c *ConnConfig) isInitialized() bool {
+func (c *amqpState) isInitialized() bool {
 	if c == nil {
 		return false
 	}

@@ -12,6 +12,7 @@ services:
       restart: always
       depends_on:
         - auth-service-db
+        - rabbitmq
 
   auth-service-db:
     build:

@@ -21,6 +21,10 @@ func validateConfig() error {
 		return err
 	}
 
+	if err := validateNestedYaml(errorMessageTemplate, "amqp", []string{"host", "user", "password"}); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -12,31 +12,30 @@ const (
 )
 
 var (
-	connConfig *ConnConfig
+	connConfig *amqpState
 	timeout    time.Duration
 )
 
 func Init(brokerUri string, brokerTimeout time.Duration) (func(), error) {
-	var cfg ConnConfig
+	var state amqpState
 	var initErr error
 
 	timeout = brokerTimeout
-
-	cfg.initOnce.Do(func() {
-		cfg.conn, initErr = amqp.Dial(brokerUri)
+	state.initOnce.Do(func() {
+		state.conn, initErr = amqp.Dial(brokerUri)
 		if initErr != nil {
 			initErr = fmt.Errorf("failed to connect to message broker: %w", initErr)
 			return
 		}
 
-		cfg.ch, initErr = cfg.conn.Channel()
+		state.ch, initErr = state.conn.Channel()
 		if initErr != nil {
-			cfg.conn.Close()
+			state.conn.Close()
 			initErr = fmt.Errorf("failed to create channel: %w", initErr)
 			return
 		}
 
-		if err := cfg.ch.ExchangeDeclare(
+		if err := state.ch.ExchangeDeclare(
 			exchangeName,
 			"fanout",
 			true,
@@ -45,20 +44,24 @@ func Init(brokerUri string, brokerTimeout time.Duration) (func(), error) {
 			false,
 			nil,
 		); err != nil {
-			cfg.ch.Close()
-			cfg.conn.Close()
+			state.ch.Close()
+			state.conn.Close()
 			initErr = fmt.Errorf("failed to declare exchange: %w", err)
 			return
 		}
 	})
 
-	connConfig = &cfg
+	connConfig = &state
 
 	if initErr != nil {
 		return nil, initErr
 	}
 
-	closeFunc := func() {
+	return getCloseFunc(&state), nil
+}
+
+func getCloseFunc(cfg *amqpState) func() {
+	return func() {
 		cfg.closeOnce.Do(func() {
 			if cfg.ch != nil {
 				cfg.ch.Close()
@@ -68,6 +71,4 @@ func Init(brokerUri string, brokerTimeout time.Duration) (func(), error) {
 			}
 		})
 	}
-
-	return closeFunc, nil
 }

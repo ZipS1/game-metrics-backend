@@ -26,6 +26,10 @@ func defaultConfig() Config {
 			Port:     5432,
 			Timezone: "UTC",
 		},
+		AMQP: AMQPConfig{
+			Port:    5672,
+			Timeout: 5000,
+		},
 	}
 }
 
@@ -37,4 +41,6 @@ func setDefaults(defaults Config) {
 	viper.SetDefault("jwt_token.refresh_token_expiration_time", defaults.JwtToken.RefreshTokenExpirationTime)
 	viper.SetDefault("database.port", defaults.Database.Port)
 	viper.SetDefault("database.timezone", defaults.Database.Timezone)
+	viper.SetDefault("amqp.port", defaults.AMQP.Port)
+	viper.SetDefault("amqp.timeout", defaults.AMQP.Timeout)
 }
