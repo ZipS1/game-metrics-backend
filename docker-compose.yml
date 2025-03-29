@@ -1,42 +1,11 @@
-services:
-  api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: ./build/package/Dockerfile
-    container_name: api-gateway
-    ports:
-      - "8080:8080"
-    networks:
-      - gm-backend-net
-    restart: on-failure
-
-  auth-service:
-    environment:
-      - DOMAIN_NAME=localhost
-    build:
-      context: ./auth-service
-      dockerfile: ./build/package/Dockerfile
-    container_name: auth-service
-    networks:
-      - gm-backend-net
-      - auth-service-net
-    restart: on-failure
-    depends_on:
-      - auth-service-db
-
-  auth-service-db:
-    build:
-      dockerfile: ./auth-service/build/package/db.Dockerfile
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=gm_auth
-    container_name: auth-service-db
-    ports:
-      - "5433:5432"
-    networks:
-      - auth-service-net
-    restart: on-failure
+include:
+  - path: ./api-gateway/deployments/dev/docker-compose.yml
+    project_directory: ./
+  - path: ./rabbitmq/docker-compose.yml
+    project_directory: ./
+  - path: ./auth-service/deployments/dev/docker-compose.yml
+    project_directory: ./
 
 networks:
   gm-backend-net:
-  auth-service-net:
+

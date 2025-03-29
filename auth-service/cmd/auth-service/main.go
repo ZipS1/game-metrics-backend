@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"game-metrics/auth-service/internal/amqp"
 	"game-metrics/auth-service/internal/config"
 	"game-metrics/auth-service/internal/handlers"
 	"game-metrics/auth-service/internal/repository"
@@ -23,6 +24,12 @@ func main() {
 	if err := repository.Init(cfg.Database.GetConnectionString()); err != nil {
 		logger.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
+
+	closeConn, err := amqp.Init(cfg.AMQP.GetConnectionString(), cfg.AMQP.Timeout)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed to connect to message broker")
+	}
+	defer closeConn()
 
 	handlers.ConfigureRouter(r, *cfg, logger)
 

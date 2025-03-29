@@ -1,0 +1,9 @@
+services:
+  rabbitmq:
+      image: rabbitmq:4.0.7-management-alpine
+      container_name: rabbitmq
+      ports:
+        - "15672:15672"
+      networks:
+        - gm-backend-net
+      restart: always

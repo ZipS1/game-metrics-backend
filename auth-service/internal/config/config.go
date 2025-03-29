@@ -10,6 +10,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+type JwtTokenConfig struct {
+	PublicKeyPemFilepath       string        `mapstructure:"public_key_filepath" env:"JWT_PUBLIC_KEY_PEM_FILEPATH"`
+	PrivateKeyPemFilepath      string        `mapstructure:"private_key_filepath" env:"JWT_PRIVATE_KEY_PEM_FILEPATH"`
+	JwtExpirationTime          time.Duration `mapstructure:"jwt_expiration_time"`
+	RefreshTokenExpirationTime time.Duration `mapstructure:"refresh_token_expiration_time"`
+
+	Ed25519PrivateKey ed25519.PrivateKey `mapstructure:"-"`
+	Ed25519PublicKey  ed25519.PublicKey  `mapstructure:"-"`
+}
+
 type DatabaseConfig struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
@@ -25,14 +35,17 @@ func (c *DatabaseConfig) GetConnectionString() string {
 	return fmt.Sprintf(templateString, c.Host, c.User, c.Password, c.DbName, c.Port, c.SslMode, c.Timezone)
 }
 
-type JwtTokenConfig struct {
-	PublicKeyPemFilepath       string        `mapstructure:"public_key_filepath" env:"JWT_PUBLIC_KEY_PEM_FILEPATH"`
-	PrivateKeyPemFilepath      string        `mapstructure:"private_key_filepath" env:"JWT_PRIVATE_KEY_PEM_FILEPATH"`
-	JwtExpirationTime          time.Duration `mapstructure:"jwt_expiration_time"`
-	RefreshTokenExpirationTime time.Duration `mapstructure:"refresh_token_expiration_time"`
+type AMQPConfig struct {
+	Host     string        `mapstructure:"host"`
+	Port     int           `mapstructure:"port"`
+	User     string        `mapstructure:"user"`
+	Password string        `mapstructure:"password"`
+	Timeout  time.Duration `mapstructure:"timeout"`
+}
 
-	Ed25519PrivateKey ed25519.PrivateKey `mapstructure:"-"`
-	Ed25519PublicKey  ed25519.PublicKey  `mapstructure:"-"`
+func (c *AMQPConfig) GetConnectionString() string {
+	templateString := "amqp://%s:%s@%s:%d/"
+	return fmt.Sprintf(templateString, c.User, c.Password, c.Host, c.Port)
 }
 
 type Config struct {
@@ -42,6 +55,7 @@ type Config struct {
 	InternalUriPrefix string         `mapstructure:"internal_uri_prefix"`
 	JwtToken          JwtTokenConfig `mapstructure:"jwt_token"`
 	Database          DatabaseConfig `mapstructure:"database"`
+	AMQP              AMQPConfig     `mapstructure:"amqp"`
 }
 
 func loadConfig(configPath string) (*Config, error) {

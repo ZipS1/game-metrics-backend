@@ -14,3 +14,9 @@ database:
   dbname: gm_auth
   sslmode: disable
   timezone: Europe/Moscow
+amqp:
+  host: rabbitmq
+  port: 5672
+  user: guest
+  password: guest
+  timeout: 5s
