@@ -1,0 +1,15 @@
+meta {
+  name: get activities
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8080/api/activities
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InVzZXJAbWFpbC5jb20iLCJGaXJzdE5hbWUiOiIiLCJMYXN0TmFtZSI6IiIsImlzcyI6ImdhbWUtbWV0cmljcy9hdXRoLXNlcnZpY2UiLCJzdWIiOiI1NWY1NDA1ZC0yNTU2LTQ5MjktYTQ4NC03ODk4MTkzOTIzYjYiLCJleHAiOjE3NDM1MjYxNzd9.0oyHOULNueMTu-0DvryExy_dtjcU9IFEOeQNSliQcgiOf2U3AzBTidmDir8Lfy05B-GNF3hEJCArHOJUAE4yCA
+}
