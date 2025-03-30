@@ -1,15 +1,12 @@
 package models
 
 import (
-	"time"
-
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Activity struct {
-	ID        int
-	UserId    uuid.UUID `gorm:"type:uuid;not null"`
-	Name      string    `gorm:"not null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	gorm.Model
+	UserId uuid.UUID `gorm:"type:uuid;not null"`
+	Name   string    `gorm:"not null"`
 }

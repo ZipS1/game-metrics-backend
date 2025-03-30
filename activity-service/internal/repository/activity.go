@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateDefaultActivityForUser(userId uuid.UUID) (int, error) {
+func CreateDefaultActivityForUser(userId uuid.UUID) (uint, error) {
 	db, err := connectToDatabase()
 	if err != nil {
 		return 0, err
