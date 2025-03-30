@@ -3,8 +3,8 @@ services:
       environment:
         - DOMAIN_NAME=localhost
       build:
-        context: ./activity-service
-        dockerfile: ./build/package/Dockerfile
+        context: ./
+        dockerfile: ./activity-service/build/package/Dockerfile
       container_name: activity-service
       networks:
         - gm-backend-net
