@@ -29,11 +29,13 @@ func RequireAuth(provider PublicKeyProvider, logger zerolog.Logger) gin.HandlerF
 			return
 		}
 
-		if err := jwt.ValidateToken(token, key); err != nil {
+		userId, err := jwt.ValidateToken(token, key)
+		if err != nil {
 			abortUnauthorized(ctx, err, logger)
 			return
 		}
 
+		ctx.Header("X-User-ID", userId)
 		ctx.Next()
 	}
 }

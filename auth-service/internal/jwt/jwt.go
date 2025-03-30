@@ -45,7 +45,7 @@ func GenerateNewTokenForUser(user models.User, expirationTime time.Duration, pri
 	return signedToken, nil
 }
 
-func ValidateToken(tokenString string, key ed25519.PublicKey) error {
+func ValidateToken(tokenString string, key ed25519.PublicKey) (string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if token.Method.Alg() != jwt.SigningMethodEdDSA.Alg() {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -53,23 +53,23 @@ func ValidateToken(tokenString string, key ed25519.PublicKey) error {
 		return key, nil
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	claims, ok := token.Claims.(*CustomClaims)
 	if !ok || !token.Valid {
-		return errors.New("invalid token")
+		return "", errors.New("invalid token")
 	}
 
 	if exists, err := repository.UserIdExists(claims.Subject); err != nil {
-		return err
+		return "", err
 	} else if !exists {
-		return errors.New("user does not exists")
+		return "", errors.New("user does not exists")
 	}
 
 	if claims.ExpiresAt == nil || claims.ExpiresAt.Time.Before(time.Now()) {
-		return errors.New("token has expired")
+		return "", errors.New("token has expired")
 	}
 
-	return nil
+	return claims.Subject, nil
 }

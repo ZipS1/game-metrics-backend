@@ -42,6 +42,7 @@ type Config struct {
 	Port              int            `mapstructure:"port"`
 	PublicUriPrefix   string         `mapstructure:"public_uri_prefix"`
 	InternalUriPrefix string         `mapstructure:"internal_uri_prefix"`
+	JwksEndpoint      string         `mapstructure:"jwks_endpoint"`
 	Database          DatabaseConfig `mapstructure:"database"`
 	AMQP              AMQPConfig     `mapstructure:"amqp"`
 }

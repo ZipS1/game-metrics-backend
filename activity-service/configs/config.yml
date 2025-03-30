@@ -1,6 +1,7 @@
 port: 8080
-public_uri_prefix: /api/activity
+public_uri_prefix: /api/activities
 internal_uri_prefix: /internal
+jwks_endpoint: http://auth-service:8080/internal/jwks
 database:
   host: activity-service-db
   port: 5432
