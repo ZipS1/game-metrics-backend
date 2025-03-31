@@ -7,9 +7,9 @@ meta {
 get {
   url: http://localhost:8080/api/activities
   body: none
-  auth: bearer
+  auth: none
 }
 
-auth:bearer {
-  token: eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InVzZXJAbWFpbC5jb20iLCJGaXJzdE5hbWUiOiIiLCJMYXN0TmFtZSI6IiIsImlzcyI6ImdhbWUtbWV0cmljcy9hdXRoLXNlcnZpY2UiLCJzdWIiOiI3OTA4MzIyMi1mNWEwLTRkMTktYTYyNy1iODNiMzBiYmUzMWMiLCJleHAiOjE3NDM1MzE0NTR9.guO-dbtyyOv2jlDgYLd0bLSfcxoMtGNfj_oprDAHi-vSA-9T1u0-IzycQ-uVrGKwQHXdVae3k6rT1Z2GQtVJCw
+headers {
+  Authorization: Bearer {{access_token}}
 }
