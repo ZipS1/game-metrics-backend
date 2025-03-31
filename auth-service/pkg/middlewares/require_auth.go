@@ -35,7 +35,7 @@ func RequireAuth(provider PublicKeyProvider, logger zerolog.Logger) gin.HandlerF
 			return
 		}
 
-		ctx.Header("X-User-ID", userId)
+		ctx.Set("userId", userId)
 		ctx.Next()
 	}
 }

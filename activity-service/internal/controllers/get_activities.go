@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"game-metrics/activity-service/internal/repository"
 	"net/http"
 
@@ -11,16 +12,22 @@ import (
 
 func GetActivities(logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		userId, err := uuid.Parse(ctx.GetHeader("X-User-ID"))
+		userIdValue, exists := ctx.Get("userId")
+		if !exists {
+			failWithError(ctx, errors.New("user ID not found in context"), http.StatusUnauthorized,
+				"Missing authentication", logger)
+			return
+		}
+
+		userId, err := uuid.Parse(userIdValue.(string))
 		if err != nil {
-			logger.Error().Err(err).Msg("Failed to parse X-User-ID header")
+			failWithError(ctx, err, http.StatusInternalServerError, "Failed to get X-User-ID header", logger)
 			return
 		}
 
 		activities, err := repository.GetUserActivities(userId)
 		if err != nil {
-			logger.Error().Err(err).Msg("Failed to get user activities")
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve activities"})
+			failWithError(ctx, err, http.StatusInternalServerError, "Failed to get user activities", logger)
 			return
 		}
 
@@ -35,4 +42,11 @@ func GetActivities(logger zerolog.Logger) gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, response)
 		logger.Info().Str("user-id", userId.String()).Msg("Activities sent successfully")
 	}
+}
+
+func failWithError(ctx *gin.Context, err error, code int, msg string, logger zerolog.Logger) {
+	logger.Error().Err(err).Msg(msg)
+	ctx.AbortWithStatusJSON(code, gin.H{
+		"error": err.Error(),
+	})
 }
