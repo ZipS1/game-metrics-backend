@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"game-metrics/auth-service/internal/models"
-	"game-metrics/auth-service/internal/repository"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -59,12 +58,6 @@ func ValidateToken(tokenString string, key ed25519.PublicKey) (string, error) {
 	claims, ok := token.Claims.(*CustomClaims)
 	if !ok || !token.Valid {
 		return "", errors.New("invalid token")
-	}
-
-	if exists, err := repository.UserIdExists(claims.Subject); err != nil {
-		return "", err
-	} else if !exists {
-		return "", errors.New("user does not exists")
 	}
 
 	if claims.ExpiresAt == nil || claims.ExpiresAt.Time.Before(time.Now()) {

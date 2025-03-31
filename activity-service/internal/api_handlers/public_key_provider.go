@@ -2,6 +2,7 @@ package api_handlers
 
 import (
 	"crypto/ed25519"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,6 +29,10 @@ func (p PublicKeyProvider) GetPublicKey() (ed25519.PublicKey, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("jwks endpoint returned %d status", resp.StatusCode)
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading jwks response: %w", err)
@@ -37,5 +42,14 @@ func (p PublicKeyProvider) GetPublicKey() (ed25519.PublicKey, error) {
 		return nil, fmt.Errorf("invalid jwks response: %w", err)
 	}
 
-	return ed25519.PublicKey(JwksResponse.Jwks), nil
+	keyBytes, err := base64.StdEncoding.DecodeString(JwksResponse.Jwks)
+	if err != nil {
+		return nil, fmt.Errorf("base64 decode failed: %w", err)
+	}
+
+	if len(keyBytes) != ed25519.PublicKeySize {
+		return nil, fmt.Errorf("invalid public key length")
+	}
+
+	return ed25519.PublicKey(keyBytes), nil
 }
