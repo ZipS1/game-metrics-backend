@@ -3,7 +3,8 @@ package api_handlers
 import (
 	"game-metrics/activity-service/internal/config"
 	"game-metrics/activity-service/internal/controllers"
-	"game-metrics/auth-service/pkg/middlewares"
+
+	"game-metrics/libs/auth_middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -13,5 +14,5 @@ func configureApiEndpoints(r *gin.RouterGroup, config config.Config, logger zero
 	publicKeyProvider := PublicKeyProvider{}
 	publicKeyProvider.Init(config.JwksEndpoint)
 
-	r.GET("/", middlewares.RequireAuth(publicKeyProvider, logger), controllers.GetActivities(logger))
+	r.GET("/", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.GetActivities(logger))
 }

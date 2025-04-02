@@ -6,7 +6,7 @@ RUN apk update --no-cache && \
 
 WORKDIR /build
 COPY ./activity-service/go.mod ./activity-service/go.sum /build/
-COPY ./auth-service /auth-service
+COPY ./libs /libs
 RUN go mod download
 COPY ./activity-service ./
 RUN go build -ldflags="-s -w" -o /app/activity-service ./cmd/activity-service/main.go

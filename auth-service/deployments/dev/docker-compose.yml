@@ -3,8 +3,8 @@ services:
       environment:
         - DOMAIN_NAME=localhost
       build:
-        context: ./auth-service
-        dockerfile: ./build/package/Dockerfile
+        context: ./
+        dockerfile: ./auth-service/build/package/Dockerfile
       container_name: auth-service
       networks:
         - gm-backend-net

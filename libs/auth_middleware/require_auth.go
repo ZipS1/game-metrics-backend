@@ -1,11 +1,12 @@
-package middlewares
+package auth_middleware
 
 import (
 	"crypto/ed25519"
 	"errors"
-	"game-metrics/auth-service/internal/jwt"
 	"net/http"
 	"strings"
+
+	"game-metrics/libs/jwt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"

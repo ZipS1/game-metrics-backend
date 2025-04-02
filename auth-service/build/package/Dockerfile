@@ -5,9 +5,10 @@ RUN apk update --no-cache && \
     apk add --no-cache tzdata
 
 WORKDIR /build
-COPY go.mod go.sum /build/
+COPY ./auth-service/go.mod ./auth-service/go.sum /build/
+COPY ./libs /libs
 RUN go mod download
-COPY . .
+COPY ./auth-service .
 RUN go build -ldflags="-s -w" -o /app/auth-service ./cmd/auth-service/main.go
 
 FROM alpine:3.20 AS final
@@ -19,10 +20,10 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/auth-service .
-COPY configs/config.yml .
+COPY ./auth-service/configs/config.yml .
 
-COPY configs/public.pem .
-COPY configs/private.pem .
+COPY ./auth-service/configs/public.pem .
+COPY ./auth-service/configs/private.pem .
 
 ENTRYPOINT ["./auth-service"]
 CMD ["--config", "config.yml"]
