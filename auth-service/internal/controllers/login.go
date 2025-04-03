@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"game-metrics/auth-service/internal/config"
-	"game-metrics/auth-service/internal/jwt"
+	"game-metrics/auth-service/internal/generate_jwt"
 	"game-metrics/auth-service/internal/repository"
 	"net/http"
 
@@ -34,7 +34,7 @@ func Login(config config.Config, logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		jwtToken, err := jwt.GenerateNewTokenForUser(
+		jwtToken, err := generate_jwt.GenerateNewTokenForUser(
 			*user,
 			config.JwtToken.JwtExpirationTime,
 			config.JwtToken.Ed25519PrivateKey,

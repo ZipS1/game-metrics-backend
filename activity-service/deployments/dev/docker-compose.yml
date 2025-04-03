@@ -1,31 +1,31 @@
 services:
-  auth-service:
+  activity-service:
       environment:
         - DOMAIN_NAME=localhost
       build:
         context: ./
-        dockerfile: ./auth-service/build/package/Dockerfile
-      container_name: auth-service
+        dockerfile: ./activity-service/build/package/Dockerfile
+      container_name: activity-service
       networks:
         - gm-backend-net
-        - auth-service-net
+        - activity-service-net
       restart: always
       depends_on:
-        - auth-service-db
+        - activity-service-db
         - rabbitmq
 
-  auth-service-db:
+  activity-service-db:
     build:
       dockerfile: ./auth-service/build/package/db.Dockerfile
     environment:
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=gm_auth
-    container_name: auth-service-db
+      - POSTGRES_DB=gm_activity
+    container_name: activity-service-db
     ports:
-      - "5433:5432"
+      - "5434:5432"
     networks:
-      - auth-service-net
+      - activity-service-net
     restart: always
 
 networks:
-  auth-service-net:
+  activity-service-net:

@@ -1,11 +1,12 @@
-package middlewares
+package auth_middleware
 
 import (
 	"crypto/ed25519"
 	"errors"
-	"game-metrics/auth-service/internal/jwt"
 	"net/http"
 	"strings"
+
+	"game-metrics/libs/jwt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -29,11 +30,13 @@ func RequireAuth(provider PublicKeyProvider, logger zerolog.Logger) gin.HandlerF
 			return
 		}
 
-		if err := jwt.ValidateToken(token, key); err != nil {
+		userId, err := jwt.ValidateToken(token, key)
+		if err != nil {
 			abortUnauthorized(ctx, err, logger)
 			return
 		}
 
+		ctx.Set("userId", userId)
 		ctx.Next()
 	}
 }
