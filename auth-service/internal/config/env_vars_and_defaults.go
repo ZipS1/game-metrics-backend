@@ -6,11 +6,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-func configureEnvVarsAndDefaults() {
+func configureEnvVarsAndDefaults() error {
 	viper.AutomaticEnv()
-	viper.BindEnv("jwt_token.public_key_filepath", "JWT_PUBLIC_KEY_PEM_FILEPATH")
-	viper.BindEnv("jwt_token.private_key_filepath", "JWT_PRIVATE_KEY_PEM_FILEPATH")
+	if err := viper.BindEnv("jwt_token.public_key_filepath", "JWT_PUBLIC_KEY_PEM_FILEPATH"); err != nil {
+		return err
+	}
+	if err := viper.BindEnv("jwt_token.private_key_filepath", "JWT_PRIVATE_KEY_PEM_FILEPATH"); err != nil {
+		return err
+	}
 	setDefaults(defaultConfig())
+	return nil
 }
 
 func defaultConfig() Config {

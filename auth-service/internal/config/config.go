@@ -62,7 +62,9 @@ func loadConfig(configPath string) (*Config, error) {
 	viper.SetConfigName(strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath)))
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(filepath.Dir(configPath))
-	configureEnvVarsAndDefaults()
+	if err := configureEnvVarsAndDefaults(); err != nil {
+		return nil, err
+	}
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
