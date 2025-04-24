@@ -3,7 +3,7 @@ SERVICES := api-gateway auth-service activity-service players-service
 BUILD_OPTIONS := -ldflags="-s -w"
 BUILD_VARS := CGO_ENABLED=0
 
-.PHONY: up down restart build clean vet lint check
+.PHONY: up down restart build clean vet lint tidy check
 
 up:
 	@docker compose up -d
@@ -38,4 +38,10 @@ lint:
 		(cd $$service && golangci-lint run ./...;) \
 	done
 
-check: vet lint
+tidy:
+	@for service in $(SERVICES); do \
+		echo "Tidy $$service..."; \
+		(cd $$service && go mod tidy;) \
+	done
+
+check: vet lint tidy
