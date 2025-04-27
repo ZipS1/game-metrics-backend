@@ -33,7 +33,8 @@ func handleUserCreated(delivery amqp091.Delivery, logger zerolog.Logger) {
 	}
 
 	amqp.SendMessage("activity created", map[string]interface{}{
-		"id": activityId,
+		"id":      activityId,
+		"user-id": message.UserId,
 	}, logger)
 	logger.Info().Str("user-id", message.UserId).Msg("Default activity created for user")
 }
