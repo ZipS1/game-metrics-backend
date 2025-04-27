@@ -30,7 +30,7 @@ func GetUserActivities(userId uuid.UUID) ([]models.Activity, error) {
 	var activities []models.Activity
 	result := db.Where("user_id = ?", userId).Find(&activities)
 	if result.Error != nil {
-		return nil, fmt.Errorf("failed to get activities from database: %w", err)
+		return nil, fmt.Errorf("failed to get activities from database: %w", result.Error)
 	}
 
 	return activities, nil
