@@ -3,8 +3,8 @@ services:
       environment:
         - DOMAIN_NAME=localhost
       build:
-        context: ./players-service
-        dockerfile: ./build/package/Dockerfile
+        context: ./
+        dockerfile: ./players-service/build/package/Dockerfile
       container_name: players-service
       networks:
         - gm-backend-net

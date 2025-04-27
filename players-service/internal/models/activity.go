@@ -3,6 +3,6 @@ package models
 import "github.com/google/uuid"
 
 type Activity struct {
-	ID     uint      `gorm:"primarykey"`
-	UserID uuid.UUID `gorm:"type:uuid;not null"`
+	Id     uint      `gorm:"primaryKey"`
+	UserId uuid.UUID `gorm:"type:uuid;not null"`
 }

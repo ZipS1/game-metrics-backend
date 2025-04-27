@@ -5,9 +5,10 @@ RUN apk update --no-cache && \
     apk add --no-cache tzdata
 
 WORKDIR /build
-COPY go.mod go.sum /build/
+COPY ./players-service/go.mod ./players-service/go.sum /build/
+COPY ./libs /libs
 RUN go mod download
-COPY . .
+COPY ./players-service ./
 RUN go build -ldflags="-s -w" -o /app/players-service ./cmd/players-service/main.go
 
 FROM alpine:3.20 AS final
@@ -19,7 +20,7 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/players-service .
-COPY configs/config.yml .
+COPY ./players-service/configs/config.yml .
 
 ENTRYPOINT ["./players-service"]
 CMD ["--config", "config.yml"]

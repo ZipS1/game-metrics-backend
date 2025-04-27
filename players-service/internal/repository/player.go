@@ -6,16 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateActivity(id uint, userId uuid.UUID) error {
+func CreatePlayer(userId uuid.UUID, activityId uint, name string) (uint, error) {
 	db, err := connectToDatabase()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	activity := models.Activity{ID: id, UserID: userId}
-	if result := db.Create(&activity); result.Error != nil {
-		return result.Error
+	player := models.Player{ActivityId: activityId, Name: name, Score: 0}
+	if result := db.Create(&player); result.Error != nil {
+		return 0, result.Error
 	}
 
-	return nil
+	return player.ID, nil
 }
