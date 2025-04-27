@@ -1,0 +1,22 @@
+meta {
+  name: create_player_1
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/players
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "activityId": 1,
+    "name": "Иванов Иван"
+  }
+}
