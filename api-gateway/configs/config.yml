@@ -11,4 +11,4 @@ services:
     url: "http://players-service:8080"
   - name: "games"
     path_prefix: "/games"
-    url: "http://games-service:8080"
+    url: "http://game-service:8080"
