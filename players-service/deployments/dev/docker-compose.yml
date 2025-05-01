@@ -1,0 +1,31 @@
+services:
+  players-service:
+      environment:
+        - DOMAIN_NAME=localhost
+      build:
+        context: ./
+        dockerfile: ./players-service/build/package/Dockerfile
+      container_name: players-service
+      networks:
+        - gm-backend-net
+        - players-service-net
+      restart: always
+      depends_on:
+        - players-service-db
+        - rabbitmq
+
+  players-service-db:
+    build:
+      dockerfile: ./players-service/build/package/db.Dockerfile
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gm_players
+    container_name: players-service-db
+    ports:
+      - "5435:5432"
+    networks:
+      - players-service-net
+    restart: always
+
+networks:
+  players-service-net:

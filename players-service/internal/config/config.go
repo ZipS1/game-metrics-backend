@@ -1,7 +1,6 @@
 package config
 
 import (
-	"crypto/ed25519"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -9,16 +8,6 @@ import (
 
 	"github.com/spf13/viper"
 )
-
-type JwtTokenConfig struct {
-	PublicKeyPemFilepath       string        `mapstructure:"public_key_filepath" env:"JWT_PUBLIC_KEY_PEM_FILEPATH"`
-	PrivateKeyPemFilepath      string        `mapstructure:"private_key_filepath" env:"JWT_PRIVATE_KEY_PEM_FILEPATH"`
-	JwtExpirationTime          time.Duration `mapstructure:"jwt_expiration_time"`
-	RefreshTokenExpirationTime time.Duration `mapstructure:"refresh_token_expiration_time"`
-
-	Ed25519PrivateKey ed25519.PrivateKey `mapstructure:"-"`
-	Ed25519PublicKey  ed25519.PublicKey  `mapstructure:"-"`
-}
 
 type DatabaseConfig struct {
 	Host     string `mapstructure:"host"`
@@ -53,7 +42,7 @@ type Config struct {
 	Port              int            `mapstructure:"port"`
 	PublicUriPrefix   string         `mapstructure:"public_uri_prefix"`
 	InternalUriPrefix string         `mapstructure:"internal_uri_prefix"`
-	JwtToken          JwtTokenConfig `mapstructure:"jwt_token"`
+	JwksEndpoint      string         `mapstructure:"jwks_endpoint"`
 	Database          DatabaseConfig `mapstructure:"database"`
 	AMQP              AMQPConfig     `mapstructure:"amqp"`
 }
@@ -62,9 +51,7 @@ func loadConfig(configPath string) (*Config, error) {
 	viper.SetConfigName(strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath)))
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(filepath.Dir(configPath))
-	if err := configureEnvVarsAndDefaults(); err != nil {
-		return nil, err
-	}
+	configureEnvVarsAndDefaults()
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
@@ -76,10 +63,6 @@ func loadConfig(configPath string) (*Config, error) {
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, err
-	}
-
-	if err := loadJwtKeys(&cfg.JwtToken); err != nil {
 		return nil, err
 	}
 

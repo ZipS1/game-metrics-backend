@@ -7,6 +7,8 @@ include:
     project_directory: ./
   - path: ./activity-service/deployments/dev/docker-compose.yml
     project_directory: ./
+  - path: ./players-service/deployments/dev/docker-compose.yml
+    project_directory: ./
 
 networks:
   gm-backend-net:
