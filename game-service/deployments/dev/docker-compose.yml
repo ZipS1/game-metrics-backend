@@ -15,7 +15,8 @@ services:
         - rabbitmq
 
   game-service-db:
-    image: postgres:17
+    build:
+      dockerfile: ./game-service/build/package/db.Dockerfile
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=gm_games

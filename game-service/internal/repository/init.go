@@ -17,7 +17,7 @@ func Init(connStr string) error {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.Game{}); err != nil {
+	if err := db.AutoMigrate(&models.Game{}, &models.Activity{}, &models.Player{}); err != nil {
 		return err
 	}
 
