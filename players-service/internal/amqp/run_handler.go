@@ -48,7 +48,7 @@ func RunHandler(exchange, queue, event string, timeout time.Duration, handler fu
 
 	messages, err := ch.Consume(
 		q.Name,
-		"activity-service",
+		fmt.Sprintf("%s-handler", event),
 		true,
 		false,
 		false,
