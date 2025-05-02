@@ -17,7 +17,15 @@ func Init(connStr string) error {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.Game{}, &models.Activity{}, &models.Player{}); err != nil {
+	if err := db.SetupJoinTable(&models.Game{}, "Players", &models.GamePlayer{}); err != nil {
+		return err
+	}
+
+	if err := db.SetupJoinTable(&models.Player{}, "Games", &models.GamePlayer{}); err != nil {
+		return err
+	}
+
+	if err := db.AutoMigrate(&models.Game{}, &models.Activity{}, &models.Player{}, &models.GamePlayer{}); err != nil {
 		return err
 	}
 

@@ -13,6 +13,8 @@ require (
 )
 
 require (
+	game-metrics/libs/jwt v0.0.0-00010101000000-000000000000 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
@@ -23,6 +25,7 @@ require (
 )
 
 require (
+	game-metrics/libs/auth_middleware v0.0.0-00010101000000-000000000000
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
