@@ -9,5 +9,6 @@ type GamePlayer struct {
 	AdditionalPoints uint
 	EndPoints        uint
 
-	JoinedAt time.Time `gorm:"autoCreateTime"`
+	JoinedAt  time.Time `gorm:"autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime:milli"`
 }
