@@ -16,4 +16,5 @@ func configureApiEndpoints(r *gin.RouterGroup, config config.Config, logger zero
 
 	r.POST("/", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.CreateGame(logger))
 	r.PATCH("/addPoints", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.AddPoints(logger))
+	r.PUT("/finish", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.FinishGame(logger))
 }
