@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"game-metrics/game-service/internal/amqp"
 	"game-metrics/game-service/internal/dto"
 	"game-metrics/game-service/internal/repository"
@@ -59,12 +58,17 @@ func FinishGame(logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		messagePayload := map[string]any{
-			"gameId": requestBody.GameId,
+		var players []any
+		for _, delta := range deltas {
+			players = append(players, map[string]any{
+				"id":    delta.Id,
+				"delta": delta.PointsDelta,
+			})
 		}
 
-		for _, delta := range deltas {
-			messagePayload[fmt.Sprintf("player-%d", delta.Id)] = delta.PointsDelta
+		messagePayload := map[string]any{
+			"gameId":  requestBody.GameId,
+			"players": players,
 		}
 
 		if err = amqp.SendMessage("game-finished", messagePayload, logger); err != nil {
