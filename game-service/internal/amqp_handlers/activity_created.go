@@ -22,7 +22,7 @@ func handleActivityCreated(delivery amqp091.Delivery, logger zerolog.Logger) {
 
 	userUuid, err := uuid.Parse(message.UserId)
 	if err != nil {
-		logger.Error().Err(err).Msg("Failed to parse UUID")
+		logger.Error().Err(err).Str("amqp-handler", "activity created").Uint("activity-id", message.ID).Str("user-id", message.UserId).Msg("Failed to parse UUID")
 		return
 	}
 
