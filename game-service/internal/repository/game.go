@@ -41,6 +41,27 @@ func CreateGame(activityId uint, players []dto.CreateGamePlayerDTO) (uint, error
 	return game.ID, nil
 }
 
+func GetGames(activityId uint) ([]dto.GetGamesGameDTO, error) {
+	var gamesDTO []dto.GetGamesGameDTO
+
+	db, err := connectToDatabase()
+	if err != nil {
+		return gamesDTO, err
+	}
+
+	var games []models.Game
+	if result := db.Where("activity_id = ?", activityId).Find(&games); result.Error != nil {
+		return gamesDTO, fmt.Errorf("failed to get games from database: %w", result.Error)
+	}
+
+	for _, game := range games {
+		gameDTO := dto.GetGamesGameDTO{ID: game.ID, StartTime: game.CreatedAt, Duration: game.Duration}
+		gamesDTO = append(gamesDTO, gameDTO)
+	}
+
+	return gamesDTO, nil
+}
+
 func ValidateGameOwner(userId uuid.UUID, gameId uint) error {
 	db, err := connectToDatabase()
 	if err != nil {
