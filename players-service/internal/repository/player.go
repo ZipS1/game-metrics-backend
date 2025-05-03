@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"game-metrics/players-service/internal/dto"
 	"game-metrics/players-service/internal/models"
 
@@ -20,6 +21,27 @@ func CreatePlayer(userId uuid.UUID, activityId uint, name string) (uint, error) 
 	}
 
 	return player.ID, nil
+}
+
+func GetPlayers(activityId uint) ([]dto.GetPlayersPlayerDTO, error) {
+	var playersDTO []dto.GetPlayersPlayerDTO
+
+	db, err := connectToDatabase()
+	if err != nil {
+		return playersDTO, err
+	}
+
+	var players []models.Player
+	if result := db.Where("activity_id = ?", activityId).Find(&players); result.Error != nil {
+		return playersDTO, fmt.Errorf("failed to get players from database: %w", result.Error)
+	}
+
+	for _, player := range players {
+		playerDTO := dto.GetPlayersPlayerDTO{ID: player.ID, Name: player.Name, Score: player.Score}
+		playersDTO = append(playersDTO, playerDTO)
+	}
+
+	return playersDTO, nil
 }
 
 func UpdatePlayerScores(deltas []dto.DeltaGamePlayerDTO) error {
