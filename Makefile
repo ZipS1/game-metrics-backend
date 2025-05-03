@@ -1,4 +1,4 @@
-SERVICES := api-gateway auth-service activity-service players-service
+SERVICES := api-gateway auth-service activity-service players-service game-service
 
 BUILD_OPTIONS := -ldflags="-s -w"
 BUILD_VARS := CGO_ENABLED=0

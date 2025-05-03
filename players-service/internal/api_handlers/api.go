@@ -13,5 +13,6 @@ func configureApiEndpoints(r *gin.RouterGroup, config config.Config, logger zero
 	publicKeyProvider := PublicKeyProvider{}
 	publicKeyProvider.Init(config.JwksEndpoint)
 
+	r.GET("/", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.GetPlayers(logger))
 	r.POST("/", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.CreatePlayer(logger))
 }

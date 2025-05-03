@@ -1,0 +1,35 @@
+meta {
+  name: finish_game_success
+  type: http
+  seq: 1
+}
+
+put {
+  url: http://localhost:8080/api/games/finish
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "gameId": 1,
+    "players": [
+      {
+        "id": 1,
+        "endPoints": 1500
+      },
+      {
+        "id": 2,
+        "endPoints": 250
+      },
+      {
+        "id": 3,
+        "endPoints": 250
+      }
+    ]
+  }
+}

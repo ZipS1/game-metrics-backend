@@ -1,0 +1,31 @@
+services:
+  game-service:
+      environment:
+        - DOMAIN_NAME=localhost
+      build:
+        context: ./
+        dockerfile: ./game-service/build/package/Dockerfile
+      container_name: game-service
+      networks:
+        - gm-backend-net
+        - game-service-net
+      restart: always
+      depends_on:
+        - game-service-db
+        - rabbitmq
+
+  game-service-db:
+    build:
+      dockerfile: ./game-service/build/package/db.Dockerfile
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gm_games
+    container_name: game-service-db
+    ports:
+      - "5436:5432"
+    networks:
+      - game-service-net
+    restart: always
+
+networks:
+  game-service-net:
