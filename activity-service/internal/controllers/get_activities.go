@@ -39,7 +39,11 @@ func GetActivities(logger zerolog.Logger) gin.HandlerFunc {
 			})
 		}
 
-		ctx.JSON(http.StatusOK, response)
+		if len(activities) == 0 {
+			ctx.Data(http.StatusOK, "application/json", []byte("[]"))
+		} else {
+			ctx.JSON(http.StatusOK, response)
+		}
 		logger.Info().Str("user-id", userId.String()).Msg("Activities sent successfully")
 	}
 }
