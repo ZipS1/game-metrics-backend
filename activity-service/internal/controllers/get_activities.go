@@ -43,10 +43,3 @@ func GetActivities(logger zerolog.Logger) gin.HandlerFunc {
 		logger.Info().Str("user-id", userId.String()).Msg("Activities sent successfully")
 	}
 }
-
-func failWithError(ctx *gin.Context, err error, code int, msg string, logger zerolog.Logger) {
-	logger.Error().Err(err).Msg(msg)
-	ctx.AbortWithStatusJSON(code, gin.H{
-		"error": err.Error(),
-	})
-}

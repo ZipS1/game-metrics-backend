@@ -26,15 +26,17 @@ func handleUserCreated(delivery amqp091.Delivery, logger zerolog.Logger) {
 		return
 	}
 
-	activityId, err := repository.CreateDefaultActivityForUser(uuid)
+	activityId, err := repository.CreateDefaultActivity(uuid)
 	if err != nil {
 		logger.Error().Err(err).Msg("Failed to create default activity in database")
 		return
 	}
 
-	amqp.SendMessage("activity created", map[string]interface{}{
-		"id":      activityId,
-		"user-id": message.UserId,
-	}, logger)
+	if err = amqp.SendMessage("activity created", map[string]any{
+		"activityId": activityId,
+		"user-id":    message.UserId,
+	}, logger); err != nil {
+		logger.Error().Err(err).Uint("activity-id", activityId).Msg("Failed to send activity created amqp message")
+	}
 	logger.Info().Str("user-id", message.UserId).Msg("Default activity created for user")
 }
