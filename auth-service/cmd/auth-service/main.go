@@ -21,15 +21,17 @@ func main() {
 		logger.Fatal().Err(err).Msg("Failed to load configuration")
 	}
 
-	if err := repository.Init(cfg.Database.GetConnectionString()); err != nil {
+	closeRepositoryFunc, err := repository.Init(cfg.Database.GetConnectionString())
+	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
+	defer closeRepositoryFunc()
 
-	closeConn, err := amqp.Init(cfg.AMQP.GetConnectionString(), cfg.AMQP.Timeout)
+	closeAmqpFunc, err := amqp.Init(cfg.AMQP.GetConnectionString(), cfg.AMQP.Timeout)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to connect to message broker")
 	}
-	defer closeConn()
+	defer closeAmqpFunc()
 
 	handlers.ConfigureRouter(r, *cfg, logger)
 
