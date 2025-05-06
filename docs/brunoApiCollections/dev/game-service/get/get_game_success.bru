@@ -1,0 +1,15 @@
+meta {
+  name: get_game_success
+  type: http
+  seq: 2
+}
+
+get {
+  url: http:localhost:8080/api/games/1
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}
