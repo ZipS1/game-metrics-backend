@@ -23,8 +23,22 @@ func CreatePlayer(userId uuid.UUID, activityId uint, name string) (uint, error) 
 	return player.ID, nil
 }
 
-func GetPlayers(activityId uint) ([]dto.GetPlayersPlayerDTO, error) {
-	var playersDTO []dto.GetPlayersPlayerDTO
+func GetPlayer(playerId uint) (dto.GetPlayerDTO, error) {
+	db, err := connectToDatabase()
+	if err != nil {
+		return dto.GetPlayerDTO{}, err
+	}
+
+	var player models.Player
+	if result := db.Where("id = ?", playerId).Find(&player); result.Error != nil {
+		return dto.GetPlayerDTO{}, fmt.Errorf("failed to get players from database: %w", result.Error)
+	}
+
+	return dto.GetPlayerDTO{ID: player.ID, Name: player.Name, Score: player.Score}, nil
+}
+
+func GetPlayers(activityId uint) ([]dto.GetPlayerDTO, error) {
+	var playersDTO []dto.GetPlayerDTO
 
 	db, err := connectToDatabase()
 	if err != nil {
@@ -37,7 +51,7 @@ func GetPlayers(activityId uint) ([]dto.GetPlayersPlayerDTO, error) {
 	}
 
 	for _, player := range players {
-		playerDTO := dto.GetPlayersPlayerDTO{ID: player.ID, Name: player.Name, Score: player.Score}
+		playerDTO := dto.GetPlayerDTO{ID: player.ID, Name: player.Name, Score: player.Score}
 		playersDTO = append(playersDTO, playerDTO)
 	}
 
@@ -64,4 +78,23 @@ func UpdatePlayerScores(deltas []dto.DeltaGamePlayerDTO) error {
 		}
 		return nil
 	})
+}
+
+func ValidatePlayerAccess(userId uuid.UUID, playerId uint) error {
+	db, err := connectToDatabase()
+	if err != nil {
+		return err
+	}
+
+	var player models.Player
+	result := db.Preload("Activity").Where("id = ?", playerId).First(&player)
+	if result.Error != nil {
+		return fmt.Errorf("failed to get activity from database: %w", result.Error)
+	}
+
+	if userId != player.Activity.UserId {
+		return ErrActivityAccessDenied
+	}
+
+	return nil
 }

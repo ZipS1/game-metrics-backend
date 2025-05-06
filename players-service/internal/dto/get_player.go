@@ -1,6 +1,6 @@
 package dto
 
-type GetPlayersPlayerDTO struct {
+type GetPlayerDTO struct {
 	ID    uint   `json:"id"`
 	Name  string `json:"name"`
 	Score int    `json:"score"`
