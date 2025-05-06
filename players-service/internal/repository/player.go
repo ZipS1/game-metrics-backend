@@ -89,7 +89,7 @@ func ValidatePlayerAccess(userId uuid.UUID, playerId uint) error {
 	var player models.Player
 	result := db.Preload("Activity").Where("id = ?", playerId).First(&player)
 	if result.Error != nil {
-		return fmt.Errorf("failed to get activity from database: %w", result.Error)
+		return fmt.Errorf("failed to get player from database: %w", result.Error)
 	}
 
 	if userId != player.Activity.UserId {

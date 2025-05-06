@@ -42,8 +42,8 @@ func GetPlayer(logger zerolog.Logger) gin.HandlerFunc {
 		}
 		playerID := uint(id)
 
-		if err := repository.ValidateActivityAccess(userId, playerID); err != nil {
-			failWithError(ctx, err, http.StatusForbidden, "Activity does not exist or you have no access to it", logger)
+		if err := repository.ValidatePlayerAccess(userId, playerID); err != nil {
+			failWithError(ctx, err, http.StatusForbidden, "Player does not exist or you have no access to it", logger)
 			return
 		}
 
