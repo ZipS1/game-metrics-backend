@@ -9,13 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
+	"gorm.io/gorm"
 )
 
 func CreatePlayer(logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var requestBody struct {
 			ActivityId uint   `json:"activityId" binding:"required"`
-			Name       string `json:"name" binding:"required"`
+			Name       string `json:"name" binding:"required,min=3"`
 		}
 
 		if err := ctx.ShouldBindJSON(&requestBody); err != nil {
@@ -43,7 +44,12 @@ func CreatePlayer(logger zerolog.Logger) gin.HandlerFunc {
 
 		playerId, err := repository.CreatePlayer(userId, requestBody.ActivityId, requestBody.Name)
 		if err != nil {
-			failWithError(ctx, err, http.StatusInternalServerError, "Failed to create player", logger)
+			switch err {
+			case gorm.ErrDuplicatedKey:
+				failWithError(ctx, err, http.StatusConflict, "Player with this name already exist", logger)
+			default:
+				failWithError(ctx, err, http.StatusInternalServerError, "Failed to create player", logger)
+			}
 			return
 		}
 
