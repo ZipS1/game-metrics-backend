@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func GetGames(logger zerolog.Logger) gin.HandlerFunc {
+func GetGame(logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userIdValue, exists := ctx.Get("userId")
 		if !exists {
@@ -27,43 +27,39 @@ func GetGames(logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		activityIDStr := ctx.Query("activity_id")
-		if activityIDStr == "" {
-			failWithError(ctx, errors.New("activity_id query parameter is required"), http.StatusBadRequest,
-				"Missing activity_id in query", logger)
+		gameIDStr := ctx.Param("id")
+		if gameIDStr == "" {
+			failWithError(ctx, errors.New("failed to get game id"), http.StatusBadRequest,
+				"failed to get game id", logger)
 			return
 		}
 
-		id, err := strconv.ParseUint(activityIDStr, 10, 64)
+		id, err := strconv.ParseUint(gameIDStr, 10, 64)
 		if err != nil {
-			failWithError(ctx, errors.New("failed to parse activity id"), http.StatusInternalServerError,
-				"Failed to parse activity id", logger)
+			failWithError(ctx, errors.New("failed to parse game id"), http.StatusInternalServerError,
+				"Failed to parse game id", logger)
 			return
 		}
-		activityID := uint(id)
+		gameID := uint(id)
 
-		if err := repository.ValidateActivityOwner(userId, activityID); err != nil {
-			failWithError(ctx, err, http.StatusForbidden, "Activity does not exist or you have no access to it", logger)
+		if err := repository.ValidateGameOwner(userId, gameID); err != nil {
+			failWithError(ctx, err, http.StatusForbidden, "Game does not exist or you have no access to it", logger)
 			return
 		}
 
-		games, err := repository.GetGames(activityID)
+		game, err := repository.GetGame(gameID)
 		if err != nil {
 			failWithError(ctx, err, http.StatusInternalServerError, "Failed to get games", logger)
 			return
 		}
 
-		data, err := json.Marshal(games)
+		data, err := json.Marshal(game)
 		if err != nil {
 			failWithError(ctx, err, http.StatusInternalServerError, "Failed to parse response to JSON", logger)
 			return
 		}
 
-		if len(games) == 0 {
-			ctx.Data(http.StatusOK, "application/json", []byte("[]"))
-		} else {
-			ctx.Data(http.StatusOK, "application/json", data)
-		}
+		ctx.Data(http.StatusOK, "application/json", data)
 		logger.Info().Str("user-id", userId.String()).Msg("Games sent successfully")
 	}
 }

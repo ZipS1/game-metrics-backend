@@ -15,6 +15,7 @@ func configureApiEndpoints(r *gin.RouterGroup, config config.Config, logger zero
 	publicKeyProvider.Init(config.JwksEndpoint)
 
 	r.GET("/", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.GetGames(logger))
+	r.GET("/:id", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.GetGame(logger))
 	r.POST("/", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.CreateGame(logger))
 	r.PATCH("/addPoints", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.AddPoints(logger))
 	r.PUT("/finish", auth_middleware.RequireAuth(publicKeyProvider, logger), controllers.FinishGame(logger))
