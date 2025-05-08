@@ -71,7 +71,7 @@ func UpdatePlayerScores(deltas []dto.DeltaGamePlayerDTO) error {
 				return result.Error
 			}
 
-			player.Score -= delta.PointsDelta
+			player.Score += delta.PointsDelta
 			if result := tx.Save(&player); result.Error != nil {
 				return result.Error
 			}
