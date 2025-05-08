@@ -16,7 +16,7 @@ func FinishGame(logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var requestBody struct {
 			GameId  uint                      `json:"gameId" binding:"required"`
-			Players []dto.FinishGamePlayerDTO `json:"players" binding:"required,dive"`
+			Players []dto.FinishGamePlayerDTO `json:"players" binding:"required"`
 		}
 
 		if err := ctx.ShouldBindJSON(&requestBody); err != nil {
