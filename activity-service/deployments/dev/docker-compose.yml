@@ -13,6 +13,8 @@ services:
       depends_on:
         - activity-service-db
         - rabbitmq
+      volumes:
+        - ./activity-service/configs/config.yml:/app/config.yml:ro
 
   activity-service-db:
     build:

@@ -20,7 +20,6 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/activity-service .
-COPY ./activity-service/configs/config.yml .
 
 ENTRYPOINT ["./activity-service"]
 CMD ["--config", "config.yml"]

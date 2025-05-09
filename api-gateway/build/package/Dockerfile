@@ -19,7 +19,6 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/api-gateway .
-COPY configs/config.yml .
 
 ENTRYPOINT ["./api-gateway"]
 CMD ["--config", "config.yml"]

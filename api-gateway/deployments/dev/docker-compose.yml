@@ -9,3 +9,5 @@ services:
     networks:
       - gm-backend-net
     restart: always
+    volumes:
+      - ./api-gateway/configs/config.yml:/app/config.yml:ro

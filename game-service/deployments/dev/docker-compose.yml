@@ -13,6 +13,8 @@ services:
       depends_on:
         - game-service-db
         - rabbitmq
+      volumes:
+        - ./game-service/configs/config.yml:/app/config.yml:ro
 
   game-service-db:
     build:

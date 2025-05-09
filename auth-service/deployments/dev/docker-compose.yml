@@ -13,6 +13,10 @@ services:
       depends_on:
         - auth-service-db
         - rabbitmq
+      volumes:
+        - ./auth-service/configs/config.yml:/app/config.yml:ro
+        - ./auth-service/configs/public.pem:/app/public.pem:ro
+        - ./auth-service/configs/private.pem:/app/private.pem:ro
 
   auth-service-db:
     build:
