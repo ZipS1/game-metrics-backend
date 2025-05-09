@@ -59,7 +59,11 @@ func GetPlayers(logger zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Data(http.StatusOK, "application/json", data)
+		if len(players) == 0 {
+			ctx.Data(http.StatusOK, "application/json", []byte("[]"))
+		} else {
+			ctx.Data(http.StatusOK, "application/json", data)
+		}
 		logger.Info().Str("user-id", userId.String()).Msg("Players sent successfully")
 	}
 }

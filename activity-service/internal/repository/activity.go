@@ -7,18 +7,22 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateDefaultActivityForUser(userId uuid.UUID) (uint, error) {
+func CreateActivity(userId uuid.UUID, name string) (uint, error) {
 	db, err := connectToDatabase()
 	if err != nil {
 		return 0, err
 	}
 
-	activity := models.Activity{UserId: userId, Name: "Активность 1"}
+	activity := models.Activity{UserId: userId, Name: name}
 	if result := db.Create(&activity); result.Error != nil {
 		return 0, result.Error
 	}
 
 	return activity.ID, nil
+}
+
+func CreateDefaultActivity(userId uuid.UUID) (uint, error) {
+	return CreateActivity(userId, "Активность 1")
 }
 
 func GetUserActivities(userId uuid.UUID) ([]models.Activity, error) {

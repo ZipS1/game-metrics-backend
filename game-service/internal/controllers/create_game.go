@@ -54,6 +54,6 @@ func CreateGame(logger zerolog.Logger) gin.HandlerFunc {
 			logger.Error().Err(err).Uint("game-id", gameId).Msg("Failed to send game-created amqp message")
 		}
 
-		respondWithSuccess(ctx, http.StatusCreated, "Game successfully created", logger)
+		respondWithSuccessAndInfo(ctx, http.StatusCreated, "Game successfully created", map[string]any{"id": gameId}, logger)
 	}
 }
