@@ -18,3 +18,9 @@ func respondWithSuccess(ctx *gin.Context, code int, message string, logger zerol
 	})
 	logger.Info().Msg(message)
 }
+
+func respondWithSuccessAndInfo(ctx *gin.Context, code int, message string, info map[string]any, logger zerolog.Logger) {
+	info["message"] = message
+	ctx.JSON(code, info)
+	logger.Info().Msg(message)
+}
