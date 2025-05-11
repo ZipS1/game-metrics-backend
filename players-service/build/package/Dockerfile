@@ -20,7 +20,6 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/players-service .
-COPY ./players-service/configs/config.yml .
 
 ENTRYPOINT ["./players-service"]
 CMD ["--config", "config.yml"]

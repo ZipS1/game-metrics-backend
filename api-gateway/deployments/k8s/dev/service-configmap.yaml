@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-config
+  namespace: game-metrics
+data:
+  config.yml: |
+    port: 8080
+    services:
+      - name: "auth"
+        path_prefix: "/auth"
+        url: "http://auth-service:8080"
+      - name: "profiles"
+        path_prefix: "/activities"
+        url: "http://activity-service:8080"
+      - name: "players"
+        path_prefix: "/players"
+        url: "http://players-service:8080"
+      - name: "games"
+        path_prefix: "/games"
+        url: "http://game-service:8080"
+
+

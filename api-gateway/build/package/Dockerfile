@@ -5,9 +5,9 @@ RUN apk update --no-cache && \
     apk add --no-cache tzdata
 
 WORKDIR /build
-COPY go.mod go.sum /build/
+COPY ./api-gateway/go.mod ./api-gateway/go.sum /build/
 RUN go mod download
-COPY . .
+COPY ./api-gateway .
 RUN go build -ldflags="-s -w" -o /app/api-gateway ./cmd/api-gateway/main.go
 
 FROM alpine:3.20 AS final
@@ -19,7 +19,6 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/api-gateway .
-COPY configs/config.yml .
 
 ENTRYPOINT ["./api-gateway"]
 CMD ["--config", "config.yml"]

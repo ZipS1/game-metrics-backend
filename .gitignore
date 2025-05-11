@@ -3,6 +3,3 @@
 
 # dotenv
 **/.env
-
-# certs
-**/*.pem

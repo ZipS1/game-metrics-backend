@@ -3,7 +3,7 @@ SERVICES := api-gateway auth-service activity-service players-service game-servi
 BUILD_OPTIONS := -ldflags="-s -w"
 BUILD_VARS := CGO_ENABLED=0
 
-.PHONY: up down restart build clean vet lint tidy check
+.PHONY: up down restart build clean vet lint tidy check k8s-build k8s-apply k8s-delete
 
 up:
 	@docker compose up -d
@@ -45,3 +45,25 @@ tidy:
 	done
 
 check: vet lint tidy
+
+k8s-build:
+	@for service in $(SERVICES); do \
+		echo "Building $${service} for k8s"; \
+		(cd $$service && \
+		docker build -f ./build/package/Dockerfile -t registry.gitlab.com/game-metrics/backend/$$service .. && \
+		docker push registry.gitlab.com/game-metrics/backend/$$service) \
+	done
+
+k8s-apply:
+	@for service in $(SERVICES) rabbitmq; do \
+		echo "Running $${service} in k8s"; \
+		(cd $$service && \
+		kubectl apply -f ./deployments/k8s/dev/) \
+	done
+
+k8s-delete:
+	@for service in $(SERVICES) rabbitmq; do \
+		echo "Deleting $${service} in k8s"; \
+		(cd $$service && \
+		kubectl delete -f ./deployments/k8s/dev/) \
+	done

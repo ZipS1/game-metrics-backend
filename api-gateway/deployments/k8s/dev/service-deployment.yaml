@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: game-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name: api-gateway
+        image: registry.gitlab.com/game-metrics/backend/api-gateway:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+        command: ["./api-gateway", "--config", "/config/config.yml"]
+      volumes:
+      - name: config-volume
+        configMap:
+          name: api-gateway-config

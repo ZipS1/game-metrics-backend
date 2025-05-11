@@ -1,11 +1,13 @@
 services:
   api-gateway:
     build:
-      context: ./api-gateway
-      dockerfile: ./build/package/Dockerfile
+      context: ./
+      dockerfile: ./api-gateway/build/package/Dockerfile
     container_name: api-gateway
     ports:
       - "8080:8080"
     networks:
       - gm-backend-net
     restart: always
+    volumes:
+      - ./api-gateway/configs/config.yml:/app/config.yml:ro

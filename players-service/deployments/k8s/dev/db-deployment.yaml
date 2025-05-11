@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: players-service-db
+  namespace: game-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: players-service-db
+  template:
+    metadata:
+      labels:
+        app: players-service-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17
+        env:
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: gm_players
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-init
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: db-init
+        configMap:
+          name: players-db-init

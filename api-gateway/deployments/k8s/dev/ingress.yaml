@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway-ingress
+  namespace: game-metrics
+  annotations:
+    cert-manager.io/cluster-issuer: dev-game-metrics-tls
+spec:
+  rules:
+    - host: dev.game-metrics.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - dev.game-metrics.online
+      secretName: ingress-tls

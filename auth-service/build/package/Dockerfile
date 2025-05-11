@@ -20,10 +20,6 @@ COPY --from=builder /usr/share/zoneinfo/Europe/Moscow /usr/share/zoneinfo/Europe
 
 WORKDIR /app
 COPY --from=builder /app/auth-service .
-COPY ./auth-service/configs/config.yml .
-
-COPY ./auth-service/configs/public.pem .
-COPY ./auth-service/configs/private.pem .
 
 ENTRYPOINT ["./auth-service"]
 CMD ["--config", "config.yml"]
