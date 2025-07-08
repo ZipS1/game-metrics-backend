@@ -93,7 +93,7 @@ The system follows a microservices architecture with the following services:
     - User authentication and authorization
     - JWT token management
     - User session handling
-3. **Activities Service** ([`/activities-service`](https://github.com/ZipS1/game-metrics-backend/tree/main/activities-servicey))
+3. **Activities Service** ([`/activities-service`](https://github.com/ZipS1/game-metrics-backend/tree/main/activities-service))
     - Game activity tracking
     - Score calculation and processing
     - Activity history management
